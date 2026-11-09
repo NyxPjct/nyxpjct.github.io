@@ -21,6 +21,7 @@
 <meta property="og:image:height" content="350">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23A78BFA'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%203l8%203v6c0%204.5-3.4%208.3-8%209-4.6-.7-8-4.5-8-9V6l8-3z'/%3E%3Cpath%20d='M9%2012l2%202%204-4'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
@@ -31,6 +32,34 @@ a{color:#C4B5FD}a:hover{color:#DDD6FE}
 @media (max-width: 640px){ .nav-text{display:none} }
 [hidden]{display:none!important}
 a:focus-visible{outline:2px solid #C4B5FD;outline-offset:3px;border-radius:6px}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.fx-card{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.fx-card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;z-index:2;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(167,139,250,.15),transparent 45%)}
+.fx-card:hover{border-color:#4A3D78!important;box-shadow:0 24px 60px -30px rgba(124,92,255,.55)}
+.fx-card:hover::before{opacity:1}
+.shot img{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.fx-card:hover .shot img{transform:scale(1.04)}
+.js .reveal{opacity:0;transform:translateY(18px)}
+.js .reveal.in{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.term:focus-within{border-color:#4A3D78!important}
+.term-body{scrollbar-width:thin;scrollbar-color:#34344A transparent;cursor:text}
+.term-out>div{white-space:pre-wrap;word-break:break-word}
+.term-out a{color:#C4B5FD}
+.term-in{all:unset;flex:1;min-width:0;color:#EDEDF2;font:inherit;font-size:16px;caret-color:#A78BFA}
+.term-in::placeholder{color:#6E6E82}
+.t-acc{color:#A78BFA}.t-mut{color:#A1A1B0}.t-dim{color:#8E8EA0}.t-err{color:#FCA5A5}.t-ok{color:#86EFAC}
+.t-caret{display:inline-block;width:8px;height:16px;margin-left:2px;vertical-align:-3px;background:#A78BFA;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js .reveal{opacity:1;transform:none}
+  .fx-card,.shot img{transition:none}
+  .fx-card:hover .shot img{transform:none}
+  .t-caret{animation:none}
+}
+
 </style>
 </head>
 <body>
@@ -53,7 +82,9 @@ Manoela Fasanello
 </nav>
 </header>
 
-<section id="inicio" style="max-width: 1120px; margin: 0 auto; padding: clamp(20px, 3vw, 32px) 24px clamp(64px, 8vw, 96px); display: flex; flex-wrap: wrap; align-items: center; gap: clamp(40px, 5vw, 56px)">
+<div class="hero-wrap" style="position: relative; overflow: hidden">
+<canvas class="stars" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"></canvas>
+<section id="inicio" style="position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: clamp(20px, 3vw, 32px) 24px clamp(64px, 8vw, 96px); display: flex; flex-wrap: wrap; align-items: center; gap: clamp(40px, 5vw, 56px)">
 <img src="background.jpg" alt="NYX Project R" width="1050" height="350" style="flex: 1 1 100%; display: block; width: 100%; height: auto; aspect-ratio: 3 / 1; object-fit: cover; border-radius: 16px; border: 1px solid #26263A">
 <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
 <p style="margin: 0; align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; border: 1px solid #34344A; border-radius: 999px; padding: 6px 14px; font-size: 14px; color: #C9C9D4"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #4ADE80"></span>Disponível para novas oportunidades</p>
@@ -68,21 +99,29 @@ Manoela Fasanello
 <a href="https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/" style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #34344A; color: #EDEDF2; text-decoration: none; font-weight: 600; padding: 14px 22px; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 11v5"></path><path d="M8 8v.01"></path><path d="M12 16v-5"></path><path d="M16 16v-3a2 2 0 0 0-4 0"></path></svg> LinkedIn</a>
 </div>
 </div>
-<div style="flex: 1 1 360px; min-width: 0; background: #12121A; border: 1px solid #26263A; border-radius: 14px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 14px">
+<div class="term" data-term="pt" style="flex: 1 1 420px; min-width: 0; background: #12121A; border: 1px solid #26263A; border-radius: 14px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 14px; transition: border-color .25s">
 <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #26263A">
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span style="margin-left: 8px; color: #8E8EA0; font-size: 13px">~/nyx-project-r</span>
 </div>
-<div style="padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 14px; line-height: 1.5">
+<div class="term-body" style="height: 300px; overflow-y: auto; padding: 18px 20px 20px; line-height: 1.55; font-size: 14.5px">
+<div class="term-out" aria-live="polite" style="display: flex; flex-direction: column; gap: 6px">
 <div><span style="color: #A78BFA">$</span> whoami<br><span style="color: #A1A1B0">manoela</span></div>
 <div><span style="color: #A78BFA">$</span> cat foco.txt<br><span style="color: #A1A1B0">apps · pentest de aplicações web</span></div>
 <div><span style="color: #A78BFA">$</span> ls projetos/<br><span style="color: #A1A1B0">DailyAPP DrawSketch MarketAI HoneyMoney</span></div>
 <div><span style="color: #A78BFA">$</span> tryhackme --user<br><span style="color: #A1A1B0">ATHOS</span><span aria-hidden="true" style="display: inline-block; width: 9px; height: 17px; margin-left: 4px; vertical-align: -3px; background: #A78BFA"></span></div>
 </div>
+<form class="term-form" style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+<span style="color: #A78BFA" aria-hidden="true">$</span>
+<label class="sr-only" for="term-in-pt">Comando do terminal</label>
+<input class="term-in" id="term-in-pt" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="digite aqui">
+</form>
+</div>
 </div>
 </section>
+</div>
 
 <section id="atuacao" style="border-top: 1px solid #22222E">
 <div style="max-width: 1120px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 40px">
@@ -91,7 +130,7 @@ Manoela Fasanello
 <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em">O que eu faço</h2>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px">
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="10" rx="1.5"></rect><path d="M6 18h6"></path><rect x="17" y="8" width="5" height="12" rx="1"></rect></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">Desenvolvimento de apps</h3>
 <p style="margin: 0; color: #A1A1B0">Aplicativos para Android, iOS, web e desktop, do primeiro protótipo à versão publicada, com interface em vários idiomas.</p>
@@ -102,7 +141,7 @@ Manoela Fasanello
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4">Desktop</span>
 </div>
 </article>
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">Segurança desde o código</h3>
 <p style="margin: 0; color: #A1A1B0">Criptografia, autenticação segura e testes automatizados entram no projeto desde o início, não depois.</p>
@@ -114,7 +153,7 @@ Manoela Fasanello
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4">CI/CD</span>
 </div>
 </article>
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">Pentest de aplicações web</h3>
 <p style="margin: 0; color: #A1A1B0">Testes de segurança em aplicações web para encontrar falhas antes de quem não deveria. Prática contínua no TryHackMe.</p>
@@ -138,7 +177,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct" style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px; padding: 10px 0">Ver tudo no GitHub <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/dailyapp.webp" alt="DailyAPP" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M9 15l2 2 4-4"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v1.3.0</span>
@@ -154,7 +194,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/DailyAPP" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">Ver repositório <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/drawsketch.webp" alt="DrawSketch" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"></path><path d="M14 7l3 3"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v0.5.1</span>
@@ -170,7 +211,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/DrawSketch" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">Ver repositório <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/marketai.webp" alt="MarketAI" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v1.4.0</span>
@@ -186,7 +228,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/MarketAI" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">Ver repositório <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/honeymoney.webp" alt="HoneyMoney" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"></path><path d="M12 8.5l3 1.75v3.5L12 15.5l-3-1.75v-3.5z"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v0.1.0 · MVP</span>
@@ -202,7 +245,12 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/HoneyMoney" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">Ver repositório <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: radial-gradient(circle at 50% 45%, #241A3D, #0F0D18 70%)">
+<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg>
+<div aria-hidden="true" style="width: 46%; display: flex; flex-direction: column; align-items: center; gap: 8px"><span style="display: block; width: 100%; height: 10px; border-radius: 3px; background: #2A2440"></span><span style="display: block; width: 78%; height: 10px; border-radius: 3px; background: #2A2440"></span><span style="display: block; width: 88%; height: 10px; border-radius: 3px; background: #2A2440"></span></div>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #A1A1B0">classificado</span>
+</div></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="16.5" r="3.5"></circle><circle cx="16.5" cy="17.5" r="3.5"></circle><path d="M7.5 13C9 8 11 5 14 3"></path><path d="M16.5 14c-.5-4-1.2-7.5-2.5-11"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">em breve · 2027</span>
@@ -212,7 +260,17 @@ Manoela Fasanello
 <p style="margin: auto 0 0; padding: 6px 0; font-weight: 600; color: #C9C9D4">Em breve</p>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><svg viewBox="0 0 320 200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="320" height="200" fill="#0F0D18"></rect>
+<g fill="#C4B5FD" opacity="0.7"><rect x="30" y="30" width="2" height="2"></rect><rect x="110" y="18" width="2" height="2"></rect><rect x="200" y="36" width="2" height="2"></rect><rect x="285" y="22" width="2" height="2"></rect><rect x="250" y="110" width="2" height="2"></rect><rect x="15" y="95" width="2" height="2"></rect></g>
+<path d="M270 30a14 14 0 1 0 12 22a11 11 0 1 1 -12 -22z" fill="#EDE9FE" opacity="0.85"></path>
+<rect x="0" y="170" width="320" height="30" fill="#1B1830"></rect><rect x="0" y="170" width="320" height="2" fill="#A78BFA"></rect>
+<g fill="#2A2440" stroke="#A78BFA" stroke-width="1.5"><rect x="40" y="132" width="62" height="10"></rect><rect x="140" y="104" width="52" height="10"></rect><rect x="222" y="74" width="62" height="10"></rect></g>
+<path d="M76 116 Q112 70 156 98" fill="none" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.8"></path>
+<rect x="60" y="114" width="14" height="18" fill="#EDE9FE"></rect><rect x="68" y="119" width="3" height="3" fill="#0F0D18"></rect>
+<g fill="#FBBF24"><circle cx="166" cy="90" r="4"></circle><circle cx="246" cy="60" r="4"></circle><circle cx="262" cy="60" r="4"></circle></g>
+</svg></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="4"></rect><path d="M7 11v3"></path><path d="M5.5 12.5h3"></path><path d="M15.5 12h.01"></path><path d="M18 14h.01"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">em desenvolvimento</span>
@@ -232,7 +290,7 @@ Manoela Fasanello
 <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em">Construo, testo, protejo.</h2>
 </div>
 <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 28px">
-<p style="margin: 0; font-size: 18px; color: #C9C9D4">Hoje curso Defesa Cibernética na Estácio. Desenvolvo qualquer tipo de app e trabalho com cybersecurity, com foco em encontrar falhas em aplicações web antes que outra pessoa encontre. Pratico no TryHackMe e, no NYX Project R, publico conteúdo de segurança e divulgo meus apps.</p>
+<p class="reveal" style="margin: 0; font-size: 18px; color: #C9C9D4">Hoje curso Defesa Cibernética na Estácio. Desenvolvo qualquer tipo de app e trabalho com cybersecurity, com foco em encontrar falhas em aplicações web antes que outra pessoa encontre. Pratico no TryHackMe e, no NYX Project R, publico conteúdo de segurança e divulgo meus apps.</p>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
 <div style="background: #12121A; border: 1px solid #26263A; border-radius: 12px; padding: 20px">
 <p style="margin: 0 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8E8EA0">em andamento</p>
@@ -333,7 +391,9 @@ Manoela Fasanello
 </nav>
 </header>
 
-<section id="home" style="max-width: 1120px; margin: 0 auto; padding: clamp(20px, 3vw, 32px) 24px clamp(64px, 8vw, 96px); display: flex; flex-wrap: wrap; align-items: center; gap: clamp(40px, 5vw, 56px)">
+<div class="hero-wrap" style="position: relative; overflow: hidden">
+<canvas class="stars" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"></canvas>
+<section id="home" style="position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: clamp(20px, 3vw, 32px) 24px clamp(64px, 8vw, 96px); display: flex; flex-wrap: wrap; align-items: center; gap: clamp(40px, 5vw, 56px)">
 <img src="background.jpg" alt="NYX Project R" width="1050" height="350" style="flex: 1 1 100%; display: block; width: 100%; height: auto; aspect-ratio: 3 / 1; object-fit: cover; border-radius: 16px; border: 1px solid #26263A">
 <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
 <p style="margin: 0; align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; border: 1px solid #34344A; border-radius: 999px; padding: 6px 14px; font-size: 14px; color: #C9C9D4"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: #4ADE80"></span>Open to new opportunities</p>
@@ -348,21 +408,29 @@ Manoela Fasanello
 <a href="https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/" style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid #34344A; color: #EDEDF2; text-decoration: none; font-weight: 600; padding: 14px 22px; border-radius: 10px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 11v5"></path><path d="M8 8v.01"></path><path d="M12 16v-5"></path><path d="M16 16v-3a2 2 0 0 0-4 0"></path></svg> LinkedIn</a>
 </div>
 </div>
-<div style="flex: 1 1 360px; min-width: 0; background: #12121A; border: 1px solid #26263A; border-radius: 14px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 14px">
+<div class="term" data-term="en" style="flex: 1 1 420px; min-width: 0; background: #12121A; border: 1px solid #26263A; border-radius: 14px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 14px; transition: border-color .25s">
 <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #26263A">
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 50%; background: #34344A"></span>
 <span style="margin-left: 8px; color: #8E8EA0; font-size: 13px">~/nyx-project-r</span>
 </div>
-<div style="padding: 20px 20px 24px; display: flex; flex-direction: column; gap: 14px; line-height: 1.5">
+<div class="term-body" style="height: 300px; overflow-y: auto; padding: 18px 20px 20px; line-height: 1.55; font-size: 14.5px">
+<div class="term-out" aria-live="polite" style="display: flex; flex-direction: column; gap: 6px">
 <div><span style="color: #A78BFA">$</span> whoami<br><span style="color: #A1A1B0">manoela</span></div>
 <div><span style="color: #A78BFA">$</span> cat focus.txt<br><span style="color: #A1A1B0">apps · web app pentesting</span></div>
 <div><span style="color: #A78BFA">$</span> ls projects/<br><span style="color: #A1A1B0">DailyAPP DrawSketch MarketAI HoneyMoney</span></div>
 <div><span style="color: #A78BFA">$</span> tryhackme --user<br><span style="color: #A1A1B0">ATHOS</span><span aria-hidden="true" style="display: inline-block; width: 9px; height: 17px; margin-left: 4px; vertical-align: -3px; background: #A78BFA"></span></div>
 </div>
+<form class="term-form" style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+<span style="color: #A78BFA" aria-hidden="true">$</span>
+<label class="sr-only" for="term-in-en">Terminal command</label>
+<input class="term-in" id="term-in-en" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="type here">
+</form>
+</div>
 </div>
 </section>
+</div>
 
 <section id="work" style="border-top: 1px solid #22222E">
 <div style="max-width: 1120px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 40px">
@@ -371,7 +439,7 @@ Manoela Fasanello
 <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em">What I do</h2>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px">
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="10" rx="1.5"></rect><path d="M6 18h6"></path><rect x="17" y="8" width="5" height="12" rx="1"></rect></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">App development</h3>
 <p style="margin: 0; color: #A1A1B0">Apps for Android, iOS, web and desktop, from the first prototype to the released version, with multilingual interfaces.</p>
@@ -382,7 +450,7 @@ Manoela Fasanello
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4">Desktop</span>
 </div>
 </article>
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">Security from the code up</h3>
 <p style="margin: 0; color: #A1A1B0">Encryption, secure authentication and automated tests are part of the project from day one, not an afterthought.</p>
@@ -394,7 +462,7 @@ Manoela Fasanello
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4">CI/CD</span>
 </div>
 </article>
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 14px">
 <div style="width: 48px; height: 48px; border-radius: 12px; background: #1B1830; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></div>
 <h3 style="margin: 4px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 21px">Web application pentesting</h3>
 <p style="margin: 0; color: #A1A1B0">Security testing of web applications to find flaws before the wrong people do. Ongoing practice on TryHackMe.</p>
@@ -418,7 +486,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct" style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px; padding: 10px 0">See everything on GitHub <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/dailyapp.webp" alt="DailyAPP" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path><path d="M8 3v4"></path><path d="M16 3v4"></path><path d="M9 15l2 2 4-4"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v1.3.0</span>
@@ -434,7 +503,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/DailyAPP" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">View repository <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/drawsketch.webp" alt="DrawSketch" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"></path><path d="M14 7l3 3"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v0.5.1</span>
@@ -450,7 +520,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/DrawSketch" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">View repository <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/marketai.webp" alt="MarketAI" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v1.4.0</span>
@@ -466,7 +537,8 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/MarketAI" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">View repository <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><img src="assets/projects/honeymoney.webp" alt="HoneyMoney" width="1200" height="750" loading="lazy" decoding="async" style="display: block; width: 100%; height: 100%; object-fit: cover; object-position: top"></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8.2 4.75v9.5L12 21.5l-8.2-4.75v-9.5z"></path><path d="M12 8.5l3 1.75v3.5L12 15.5l-3-1.75v-3.5z"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">v0.1.0 · MVP</span>
@@ -482,7 +554,12 @@ Manoela Fasanello
 <a href="https://github.com/NyxPjct/HoneyMoney" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none; padding: 6px 0">View repository <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg></a>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: radial-gradient(circle at 50% 45%, #241A3D, #0F0D18 70%)">
+<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path><path d="M12 14v3"></path></svg>
+<div aria-hidden="true" style="width: 46%; display: flex; flex-direction: column; align-items: center; gap: 8px"><span style="display: block; width: 100%; height: 10px; border-radius: 3px; background: #2A2440"></span><span style="display: block; width: 78%; height: 10px; border-radius: 3px; background: #2A2440"></span><span style="display: block; width: 88%; height: 10px; border-radius: 3px; background: #2A2440"></span></div>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #A1A1B0">classified</span>
+</div></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="16.5" r="3.5"></circle><circle cx="16.5" cy="17.5" r="3.5"></circle><path d="M7.5 13C9 8 11 5 14 3"></path><path d="M16.5 14c-.5-4-1.2-7.5-2.5-11"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">coming soon · 2027</span>
@@ -492,7 +569,17 @@ Manoela Fasanello
 <p style="margin: auto 0 0; padding: 6px 0; font-weight: 600; color: #C9C9D4">Coming soon</p>
 </article>
 
-<article style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<article class="fx-card reveal" style="background: #12121A; border: 1px solid #26263A; border-radius: 14px; position: relative; overflow: hidden; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div class="shot" style="margin: -28px -28px 4px; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid #26263A; background: #0F0D18"><svg viewBox="0 0 320 200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="320" height="200" fill="#0F0D18"></rect>
+<g fill="#C4B5FD" opacity="0.7"><rect x="30" y="30" width="2" height="2"></rect><rect x="110" y="18" width="2" height="2"></rect><rect x="200" y="36" width="2" height="2"></rect><rect x="285" y="22" width="2" height="2"></rect><rect x="250" y="110" width="2" height="2"></rect><rect x="15" y="95" width="2" height="2"></rect></g>
+<path d="M270 30a14 14 0 1 0 12 22a11 11 0 1 1 -12 -22z" fill="#EDE9FE" opacity="0.85"></path>
+<rect x="0" y="170" width="320" height="30" fill="#1B1830"></rect><rect x="0" y="170" width="320" height="2" fill="#A78BFA"></rect>
+<g fill="#2A2440" stroke="#A78BFA" stroke-width="1.5"><rect x="40" y="132" width="62" height="10"></rect><rect x="140" y="104" width="52" height="10"></rect><rect x="222" y="74" width="62" height="10"></rect></g>
+<path d="M76 116 Q112 70 156 98" fill="none" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.8"></path>
+<rect x="60" y="114" width="14" height="18" fill="#EDE9FE"></rect><rect x="68" y="119" width="3" height="3" fill="#0F0D18"></rect>
+<g fill="#FBBF24"><circle cx="166" cy="90" r="4"></circle><circle cx="246" cy="60" r="4"></circle><circle cx="262" cy="60" r="4"></circle></g>
+</svg></div>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
 <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="4"></rect><path d="M7 11v3"></path><path d="M5.5 12.5h3"></path><path d="M15.5 12h.01"></path><path d="M18 14h.01"></path></svg>
 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C9C9D4; border: 1px solid #34344A; border-radius: 999px; padding: 4px 10px">in development</span>
@@ -512,7 +599,7 @@ Manoela Fasanello
 <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em">Build, test, protect.</h2>
 </div>
 <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 28px">
-<p style="margin: 0; font-size: 18px; color: #C9C9D4">I’m currently studying Cyber Defense at Estácio. I develop all kinds of apps and work in cybersecurity, focused on finding flaws in web applications before someone else does. I practice on TryHackMe, and on NYX Project R I share security content and showcase my apps.</p>
+<p class="reveal" style="margin: 0; font-size: 18px; color: #C9C9D4">I’m currently studying Cyber Defense at Estácio. I develop all kinds of apps and work in cybersecurity, focused on finding flaws in web applications before someone else does. I practice on TryHackMe, and on NYX Project R I share security content and showcase my apps.</p>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
 <div style="background: #12121A; border: 1px solid #26263A; border-radius: 12px; padding: 20px">
 <p style="margin: 0 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8E8EA0">in progress</p>
@@ -605,6 +692,7 @@ Manoela Fasanello
     try{localStorage.setItem('lang',l);}catch(e){}
   }
   var saved=null; try{saved=localStorage.getItem('lang');}catch(e){}
+  window.nyxSetLang=set;
   set(saved==='pt'||saved==='en'?saved:((navigator.language||'').toLowerCase().indexOf('pt')===0?'pt':'en'));
   document.addEventListener('click',function(e){
     var a=e.target.closest('[data-set-lang]'); if(!a) return;
@@ -612,5 +700,174 @@ Manoela Fasanello
   });
 })();
 </script>
+
+<script>
+(function(){
+  var RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var HOVER = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
+  var GH = 'https://github.com/NyxPjct';
+  var LINK = {li:'https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/', gh:GH, ig:'https://www.instagram.com/nyxprojectr', thm:'https://tryhackme.com/p/ATHOS'};
+  var PROJ = [['DailyAPP','Android · iOS'],['DrawSketch','Web · Desktop · Android · iOS'],['MarketAI','Web · Windows'],['HoneyMoney','Web · open source']];
+  var T = {
+    pt: {
+      hint:'dica: digite help e aperte Enter',
+      nf:'comando não encontrado: ', nf2:' (digite help)',
+      help:[['help','lista os comandos'],['whoami','quem sou eu'],['projetos','meus apps'],['stack','tecnologias que uso'],['contato','onde me encontrar'],['tryhackme','meu perfil no TryHackMe'],['lang en','switch to English'],['clear','limpa o terminal']],
+      who:'Manoela Fasanello\ndesenvolvedora de apps · cybersecurity · pentest de aplicações web',
+      focusCmd:'cat foco.txt', focus:'apps · pentest de aplicações web',
+      proj:'apps com o código no GitHub:', more:'+ app secreto (2027) e jogo de plataforma (em desenvolvimento)',
+      stack:[['linguagens','TypeScript, JavaScript, Python'],['apps','React, Next.js, Vite, Capacitor, Electron'],['back-end','FastAPI, PostgreSQL, Supabase'],['qualidade','Playwright, GitHub Actions, Docker']],
+      thm:'pratico segurança ofensiva no TryHackMe como ATHOS',
+      sudo:['[sudo] senha para recrutadora: ********','acesso concedido. o caminho mais rápido é este:'],
+      sudoNo:'permissão negada. tente: sudo hire manoela',
+      nmap:['Starting Nmap em nyxpjct.github.io ...','PORT     STATE  SERVICE','443/tcp  open   https','80/tcp   open   http → redireciona para 443','nada além do necessário por aqui. boa tentativa ;)'],
+      exit:'não dá pra sair tão fácil assim. que tal: contato ;)',
+      ls:'dailyapp/  drawsketch/  marketai/  honeymoney/  sobre.txt  foco.txt',
+      about:'Curso Defesa Cibernética na Estácio, desenvolvo apps e estudo segurança ofensiva. No NYX Project R publico conteúdo de segurança e divulgo meus apps.',
+      nofile:': arquivo não encontrado', files:{'foco.txt':'focus','focus.txt':'focus','sobre.txt':'about','about.txt':'about'}
+    },
+    en: {
+      hint:'tip: type help and press Enter',
+      nf:'command not found: ', nf2:' (type help)',
+      help:[['help','list commands'],['whoami','who I am'],['projects','my apps'],['stack','tech I use'],['contact','where to find me'],['tryhackme','my TryHackMe profile'],['lang pt','mudar para português'],['clear','clear the terminal']],
+      who:'Manoela Fasanello\napp developer · cybersecurity · web app pentesting',
+      focusCmd:'cat focus.txt', focus:'apps · web app pentesting',
+      proj:'apps with source code on GitHub:', more:'+ a secret app (2027) and a platform game (in development)',
+      stack:[['languages','TypeScript, JavaScript, Python'],['apps','React, Next.js, Vite, Capacitor, Electron'],['back-end','FastAPI, PostgreSQL, Supabase'],['quality','Playwright, GitHub Actions, Docker']],
+      thm:'I practice offensive security on TryHackMe as ATHOS',
+      sudo:['[sudo] password for recruiter: ********','access granted. fastest route:'],
+      sudoNo:'permission denied. try: sudo hire manoela',
+      nmap:['Starting Nmap on nyxpjct.github.io ...','PORT     STATE  SERVICE','443/tcp  open   https','80/tcp   open   http → redirects to 443','nothing more than needed here. nice try ;)'],
+      exit:'it is not that easy to leave. how about: contact ;)',
+      ls:'dailyapp/  drawsketch/  marketai/  honeymoney/  about.txt  focus.txt',
+      about:'I study Cyber Defense at Estácio, build apps and study offensive security. On NYX Project R I share security content and showcase my apps.',
+      nofile:': no such file', files:{'foco.txt':'focus','focus.txt':'focus','sobre.txt':'about','about.txt':'about'}
+    }
+  };
+  var ALIAS = {projetos:'projects',projects:'projects',contato:'contact',contact:'contact',sobre:'about',about:'about',ajuda:'help',limpar:'clear'};
+
+  function Term(el){
+    var L = el.getAttribute('data-term') === 'en' ? 'en' : 'pt', t = T[L];
+    var out = el.querySelector('.term-out'), form = el.querySelector('.term-form'), inp = el.querySelector('.term-in'), body = el.querySelector('.term-body');
+    var hist = [], hi = 0, intro = null, started = false;
+    out.innerHTML = '';
+    function scroll(){ body.scrollTop = body.scrollHeight; }
+    function line(text, cls){ var d = document.createElement('div'); if (cls) d.className = cls; d.textContent = text; out.appendChild(d); scroll(); return d; }
+    function prompt(cmd){ var d = document.createElement('div'); var s = document.createElement('span'); s.className = 't-acc'; s.textContent = '$ '; d.appendChild(s); var c = document.createElement('span'); c.textContent = cmd; d.appendChild(c); out.appendChild(d); scroll(); return c; }
+    function link(label, href, text){ var d = document.createElement('div'); if (label){ var s = document.createElement('span'); s.className = 't-dim'; s.textContent = label; d.appendChild(s); } var a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = text; d.appendChild(a); out.appendChild(d); scroll(); }
+    function pad(x, n){ while (x.length < n) x += ' '; return x; }
+    function run(raw){
+      var cmd = raw.trim(); if (!cmd) return;
+      var parts = cmd.toLowerCase().split(/\s+/), c = ALIAS[parts[0]] || parts[0], arg = parts.slice(1).join(' ');
+      if (c === 'help'){ t.help.forEach(function(h){ line(pad(h[0], 11) + h[1], 't-mut'); }); }
+      else if (c === 'whoami'){ line(t.who, 't-mut'); }
+      else if (c === 'projects'){ line(t.proj, 't-dim'); PROJ.forEach(function(p){ link('', GH + '/' + p[0], p[0]); out.lastChild.appendChild(document.createTextNode(pad('', 13 - p[0].length) + p[1])); }); line(t.more, 't-dim'); }
+      else if (c === 'ls'){ line(t.ls, 't-mut'); }
+      else if (c === 'stack'){ t.stack.forEach(function(s){ line(pad(s[0], 12) + s[1], 't-mut'); }); }
+      else if (c === 'contact'){ link(pad('linkedin', 11), LINK.li, 'manoela-fasanello'); link(pad('github', 11), LINK.gh, 'NyxPjct'); link(pad('instagram', 11), LINK.ig, '@nyxprojectr'); link(pad('tryhackme', 11), LINK.thm, 'ATHOS'); }
+      else if (c === 'tryhackme'){ line(t.thm, 't-mut'); link('', LINK.thm, 'tryhackme.com/p/ATHOS'); }
+      else if (c === 'cat'){ var f = t.files[arg]; if (f === 'focus') line(t.focus, 't-mut'); else if (f === 'about') line(t.about, 't-mut'); else line('cat: ' + (arg || '?') + t.nofile, 't-err'); }
+      else if (c === 'about'){ line(t.about, 't-mut'); }
+      else if (c === 'lang'){ if ((arg === 'en' || arg === 'pt') && window.nyxSetLang){ window.nyxSetLang(arg); } else line('lang: pt | en', 't-err'); }
+      else if (c === 'clear' || c === 'cls'){ out.innerHTML = ''; }
+      else if (c === 'sudo'){ if (/hire/.test(arg)){ line(t.sudo[0], 't-dim'); line(t.sudo[1], 't-ok'); link('', LINK.li, 'linkedin.com/in/manoela-fasanello'); } else line(t.sudoNo, 't-err'); }
+      else if (c === 'nmap'){ t.nmap.forEach(function(x, i){ line(x, i === 4 ? 't-acc' : 't-mut'); }); }
+      else if (c === 'exit' || c === 'quit'){ line(t.exit, 't-mut'); }
+      else if (c === 'echo'){ line(cmd.slice(5), 't-mut'); }
+      else { line(t.nf + parts[0] + t.nf2, 't-err'); }
+    }
+    function finishIntro(){ if (!intro) return; intro.done = true; intro = null; }
+    function playIntro(){
+      if (started) return; started = true;
+      var steps = [['whoami', t.who], [t.focusCmd, t.focus]];
+      if (RM){ steps.forEach(function(s){ prompt(s[0]); line(s[1], 't-mut'); }); line(t.hint, 't-dim'); return; }
+      var st = intro = {done:false}, i = 0;
+      function next(){
+        if (st.done){ for (; i < steps.length; i++){ prompt(steps[i][0]); line(steps[i][1], 't-mut'); } line(t.hint, 't-dim'); return; }
+        if (i >= steps.length){ intro = null; line(t.hint, 't-dim'); return; }
+        var s = steps[i], span = prompt(''), k = 0;
+        (function type(){
+          if (st.done){ span.textContent = s[0]; line(s[1], 't-mut'); i++; next(); return; }
+          if (k < s[0].length){ span.textContent += s[0][k++]; setTimeout(type, 55 + Math.random() * 45); }
+          else setTimeout(function(){ line(s[1], 't-mut'); i++; setTimeout(next, 420); }, 260);
+        })();
+      }
+      setTimeout(next, 500);
+    }
+    form.addEventListener('submit', function(e){ e.preventDefault(); finishIntro(); var v = inp.value; inp.value = ''; prompt(v); if (v.trim()){ hist.push(v); hi = hist.length; } run(v); });
+    inp.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowUp' && hist.length){ e.preventDefault(); hi = Math.max(0, hi - 1); inp.value = hist[hi] || ''; }
+      else if (e.key === 'ArrowDown' && hist.length){ e.preventDefault(); hi = Math.min(hist.length, hi + 1); inp.value = hist[hi] || ''; }
+    });
+    inp.addEventListener('focus', finishIntro);
+    body.addEventListener('click', function(e){ if (e.target.tagName !== 'A' && !String(window.getSelection())) inp.focus({preventScroll:true}); });
+    if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting){ playIntro(); io.disconnect(); } }); }, {threshold:.35}); io.observe(el); } else playIntro();
+  }
+
+  function Stars(cv){
+    var ctx = cv.getContext && cv.getContext('2d'); if (!ctx) return;
+    var host = cv.parentElement, w = 0, h = 0, pts = [], m = {x:-1e4, y:-1e4}, on = false, inView = false, raf = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function size(){
+      var r = host.getBoundingClientRect(); w = r.width; h = r.height; if (!w || !h) return;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = Math.round(Math.min(120, Math.max(28, w * h / 11000))); pts = [];
+      for (var i = 0; i < n; i++) pts.push({x:Math.random() * w, y:Math.random() * h, vx:(Math.random() - .5) * .22, vy:(Math.random() - .5) * .22, r:Math.random() * 1.3 + .5});
+      draw();
+    }
+    function draw(){
+      ctx.clearRect(0, 0, w, h); var i, j, p, q, dx, dy, d, D = 125, n = pts.length;
+      if (on && !RM) for (i = 0; i < n; i++){ p = pts[i]; p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x += w; else if (p.x > w) p.x -= w; if (p.y < 0) p.y += h; else if (p.y > h) p.y -= h; }
+      ctx.lineWidth = 1;
+      for (i = 0; i < n; i++){ p = pts[i];
+        for (j = i + 1; j < n; j++){ q = pts[j]; dx = p.x - q.x; dy = p.y - q.y; d = dx * dx + dy * dy;
+          if (d < D * D){ d = Math.sqrt(d); ctx.strokeStyle = 'rgba(167,139,250,' + ((1 - d / D) * .16).toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); } }
+        dx = p.x - m.x; dy = p.y - m.y; d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 170){ ctx.strokeStyle = 'rgba(196,181,253,' + ((1 - d / 170) * .5).toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(m.x, m.y); ctx.stroke(); }
+      }
+      ctx.fillStyle = 'rgba(196,181,253,.6)';
+      for (i = 0; i < n; i++){ p = pts[i]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fill(); }
+    }
+    function loop(){ draw(); raf = requestAnimationFrame(loop); }
+    function start(){ if (on || document.hidden) return; if (!w) size(); on = true; if (!RM) raf = requestAnimationFrame(loop); }
+    function stop(){ on = false; cancelAnimationFrame(raf); }
+    host.addEventListener('pointermove', function(e){ if (e.pointerType !== 'mouse') return; var r = host.getBoundingClientRect(); m.x = e.clientX - r.left; m.y = e.clientY - r.top; if (RM) draw(); });
+    host.addEventListener('pointerleave', function(){ m.x = m.y = -1e4; if (RM) draw(); });
+    var tm; window.addEventListener('resize', function(){ clearTimeout(tm); tm = setTimeout(function(){ w = 0; size(); }, 200); });
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); else if (inView) start(); });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ es.forEach(function(e){ inView = e.isIntersecting; if (inView) start(); else stop(); }); }).observe(host);
+    else { size(); start(); }
+  }
+
+  function Cards(){
+    document.querySelectorAll('.fx-card').forEach(function(c){
+      c.addEventListener('pointermove', function(e){
+        var r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        c.style.setProperty('--mx', x + 'px'); c.style.setProperty('--my', y + 'px');
+        if (HOVER && !RM && !c.classList.contains('reveal')) c.style.transform = 'perspective(900px) rotateX(' + ((.5 - y / r.height) * 5).toFixed(2) + 'deg) rotateY(' + ((x / r.width - .5) * 5).toFixed(2) + 'deg) translateY(-2px)';
+      });
+      c.addEventListener('pointerleave', function(){ c.style.transform = ''; });
+    });
+  }
+
+  function Reveal(){
+    var els = document.querySelectorAll('.reveal');
+    if (RM || !('IntersectionObserver' in window)){ els.forEach(function(el){ el.classList.remove('reveal'); }); return; }
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return; var el = e.target; io.unobserve(el);
+        var sib = Array.prototype.indexOf.call(el.parentElement.children, el) % 3;
+        el.style.transitionDelay = (sib * 90) + 'ms'; el.classList.add('in');
+        setTimeout(function(){ el.classList.remove('reveal', 'in'); el.style.transitionDelay = ''; }, 900 + sib * 90);
+      });
+    }, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+    els.forEach(function(el){ io.observe(el); });
+  }
+
+  document.querySelectorAll('[data-term]').forEach(Term);
+  document.querySelectorAll('canvas.stars').forEach(Stars);
+  Cards(); Reveal();
+})();
+</script>
+
 </body>
 </html>
