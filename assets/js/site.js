@@ -216,6 +216,21 @@
     });
   }
 
+
+  /* ---------- contador de visitas anônimo (GoatCounter, sem cookies) ---------- */
+  function Stats(){
+    var host = location.hostname;
+    if (host !== 'nyxpjct.github.io' || navigator.webdriver || document.visibilityState === 'prerender') return;
+    var q = ['p=' + encodeURIComponent(location.pathname || '/'),
+             't=' + encodeURIComponent(document.title || ''),
+             'r=' + encodeURIComponent(document.referrer || ''),
+             's=' + encodeURIComponent([screen.width, screen.height, window.devicePixelRatio || 1].join(',')),
+             'rnd=' + Math.random().toString(36).slice(2)];
+    var url = 'https://nyxpjct.goatcounter.com/count?' + q.join('&');
+    if (navigator.sendBeacon && navigator.sendBeacon(url)) return;
+    var img = new Image(); img.referrerPolicy = 'no-referrer-when-downgrade'; img.src = url;
+  }
+
   function Term(el){
     var L = el.getAttribute('data-term') === 'en' ? 'en' : 'pt', t = T[L];
     var out = el.querySelector('.term-out'), form = el.querySelector('.term-form'), inp = el.querySelector('.term-in'), body = el.querySelector('.term-body');
@@ -336,5 +351,5 @@
 
   document.querySelectorAll('[data-term]').forEach(Term);
   document.querySelectorAll('canvas.stars').forEach(Stars);
-  Cards(); Reveal(); GitHubStats(); TryHackMe(); Palette(); Intro(); Pointer();
+  Cards(); Reveal(); GitHubStats(); TryHackMe(); Palette(); Intro(); Pointer(); Stats();
 })();
