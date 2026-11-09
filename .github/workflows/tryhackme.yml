@@ -21,15 +21,28 @@ jobs:
 
       - name: Busca o perfil público do TryHackMe
         run: |
-          set -euo pipefail
-          curl -fsS --max-time 20 -A "nyxpjct.github.io portfolio stats" \
-            "https://tryhackme.com/api/v2/public-profile?username=ATHOS" -o /tmp/thm.json
-          jq -e '.status == "success" and (.data.level | type == "number")' /tmp/thm.json > /dev/null
+          set -uo pipefail
+          ok=0
+          for wait in 0 30 90; do
+            sleep "$wait"
+            if curl -fsS --max-time 20 -H "Accept: application/json" -A "Mozilla/5.0 (nyxpjct.github.io portfolio stats)" \
+                 "https://tryhackme.com/api/v2/public-profile?username=ATHOS" -o /tmp/thm.json \
+               && jq -e '.status == "success" and (.data.level | type == "number")' /tmp/thm.json > /dev/null; then
+              ok=1; break
+            fi
+            echo "Tentativa falhou, tentando de novo depois de uma pausa..."
+          done
+          if [ "$ok" != 1 ]; then
+            echo "::warning::O TryHackMe não respondeu agora. O site continua com os últimos números salvos."
+            echo "skip=1" >> "$GITHUB_ENV"; exit 0
+          fi
+          set -e
           jq '{username: .data.username, level: .data.level, rank: .data.rank, points: .data.totalPoints,
                rooms: .data.completedRoomsNumber, badges: .data.badgesNumber, largestStreak: .data.largestStreak,
                path: (.data.enrolledPath.title // null), updatedAt: (now | todate)}' /tmp/thm.json > /tmp/new.json
 
       - name: Salva se os números mudaram
+        if: env.skip != '1'
         run: |
           set -euo pipefail
           if [ -f assets/data/thm.json ] && \
