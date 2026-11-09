@@ -1,0 +1,44 @@
+name: Atualiza dados do TryHackMe
+
+on:
+  schedule:
+    - cron: "17 10 * * *"   # todo dia, 07:17 em São Paulo
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tryhackme-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Busca o perfil público do TryHackMe
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 20 -A "nyxpjct.github.io portfolio stats" \
+            "https://tryhackme.com/api/v2/public-profile?username=ATHOS" -o /tmp/thm.json
+          jq -e '.status == "success" and (.data.level | type == "number")' /tmp/thm.json > /dev/null
+          jq '{username: .data.username, level: .data.level, rank: .data.rank, points: .data.totalPoints,
+               rooms: .data.completedRoomsNumber, badges: .data.badgesNumber, largestStreak: .data.largestStreak,
+               path: (.data.enrolledPath.title // null), updatedAt: (now | todate)}' /tmp/thm.json > /tmp/new.json
+
+      - name: Salva se os números mudaram
+        run: |
+          set -euo pipefail
+          if [ -f assets/data/thm.json ] && \
+             [ "$(jq -S 'del(.updatedAt)' assets/data/thm.json)" = "$(jq -S 'del(.updatedAt)' /tmp/new.json)" ]; then
+            echo "Nada mudou."; exit 0
+          fi
+          cp /tmp/new.json assets/data/thm.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/thm.json
+          git commit -m "Atualiza dados do TryHackMe"
+          git push
