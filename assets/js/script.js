@@ -11,7 +11,7 @@
   var CONFIG = {
     // Formulário de contato: cole aqui o endpoint do Formspree (ex.: https://formspree.io/f/abcdwxyz).
     // Vazio = o formulário valida e sugere o LinkedIn, sem enviar nada.
-    formEndpoint: '',
+    formEndpoint: 'https://formspree.io/f/mwlokobn',
     github: 'https://github.com/NyxPjct',
     links: {
       linkedin: 'https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/',
@@ -528,7 +528,8 @@
         return;
       }
       btn.disabled = true; say(t('f_sending'));
-      fetch(CONFIG.formEndpoint, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+      var data = new FormData(form); data.append('_subject', 'Novo contato pelo portfólio — ' + form.elements.name.value.trim());
+      fetch(CONFIG.formEndpoint, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
         .then(function (r) { if (!r.ok) throw new Error(); form.reset(); say(t('f_ok'), 'ok'); })
         .catch(function () { say(t('f_err'), 'err'); })
         .then(function () { btn.disabled = false; });
