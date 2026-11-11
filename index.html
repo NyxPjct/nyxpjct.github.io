@@ -27,13 +27,14 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/style.css?v=8cfeec9c88">
+<link rel="stylesheet" href="assets/css/style.css?v=018f5cb775">
 <!-- early.js: marca idioma e JS antes de pintar a página (evita piscar) -->
-<script src="assets/js/early.js?v=6c675aefc0"></script>
+<script src="assets/js/early.js?v=f252b7ff04"></script>
 <!-- GSAP + ScrollTrigger hospedados no próprio site (sem CDN, por causa da CSP) -->
 <script src="assets/vendor/gsap.min.js?v=3d1bea374a" defer></script>
 <script src="assets/vendor/ScrollTrigger.min.js?v=b5bb360661" defer></script>
-<script src="assets/js/script.js?v=df49250864" defer></script>
+<script src="assets/vendor/MotionPathPlugin.min.js?v=695284c76e" defer></script>
+<script src="assets/js/script.js?v=5afff43ee6" defer></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Manoela Fasanello", "url": "https://nyxpjct.github.io/", "image": "https://nyxpjct.github.io/assets/og-image.jpg", "jobTitle": "Desenvolvedora de apps e Cybersecurity", "description": "Desenvolvedora de apps para celular, web e desktop, com foco em segurança e pentest de aplicações web.", "address": {"@type": "PostalAddress", "addressLocality": "Praia Grande", "addressRegion": "SP", "addressCountry": "BR"}, "knowsAbout": ["Desenvolvimento de apps", "Cybersecurity", "Pentest de aplicações web", "TypeScript", "React", "Python"], "sameAs": ["https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/", "https://github.com/NyxPjct", "https://tryhackme.com/p/ATHOS", "https://www.instagram.com/nyxprojectr"]}</script>
 </head>
 <body>
@@ -68,8 +69,12 @@
 <main id="conteudo">
 
 <!-- ========== 1. HERO ========== -->
-<section class="hero" id="inicio" aria-labelledby="hero-title">
-  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+<!-- Abertura cinematográfica: a seção fica presa (pin) enquanto a pessoa rola.
+     O fundo faz um zoom lento, a cena escurece no fim e as barras de cinema se recolhem. -->
+<section class="hero" id="inicio" aria-labelledby="hero-title" data-opening>
+  <div class="hero-bg" aria-hidden="true"><canvas class="hero-canvas"></canvas></div>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="lbox" aria-hidden="true"><i class="lbox-bar lbox-t"></i><i class="lbox-bar lbox-b"></i></div>
   <div class="container hero-grid">
     <div class="hero-copy">
       <p class="pill" data-hero="1"><span class="dot" aria-hidden="true"></span><span data-i18n="avail">Disponível para novas oportunidades</span></p>
@@ -368,6 +373,30 @@
 
 <!-- ========== 7. RODAPÉ ========== -->
 <footer class="footer">
+  <div class="fox-static" aria-hidden="true"><svg class="fox" viewBox="-64 -70 128 76" aria-hidden="true" focusable="false">
+  <g data-fx="root">
+   <g data-fx="pose">
+    <g class="fx-far">
+      <path data-fx="lbf" d="M0 0 C3 5 4 9 1 13 L1.5 22 L5.5 22.5"/>
+      <path data-fx="lff" d="M0 0 L0.5 12 L-0.5 22 L3.5 22.5"/>
+    </g>
+    <g data-fx="tail"><path class="fx-fill" d="M-24 -28 C-36 -25 -50 -25 -57 -35 C-61 -42 -58 -51 -52 -48 C-46 -39 -36 -37 -23 -35 Z"/><path class="fx-tip" d="M-57 -35 C-58.5 -41 -56 -46 -52 -48"/></g>
+    <path class="fx-fill" d="M-26 -30 C-22 -40 6 -43 24 -39 C32 -37 34 -28 28 -23 C22 -19 10 -20 -2 -20 C-12 -20 -22 -20 -26 -24 C-28 -26 -28 -28 -26 -30 Z"/>
+    <path class="fx-line" d="M22 -38 C27 -33 27 -27 24 -22"/>
+    <g class="fx-near">
+      <path data-fx="lbn" d="M0 0 C3 5 4 9 1 13 L1.5 22 L5.5 22.5"/>
+      <path data-fx="lfn" d="M0 0 L0.5 12 L-0.5 22 L3.5 22.5"/>
+    </g>
+    <g data-fx="head">
+      <g data-fx="earb"><path class="fx-fill" d="M26 -47 L25 -61 L32 -49 Z"/></g>
+      <path class="fx-fill" d="M19 -36 L25 -47 L33 -50 L40 -48 L45 -42 L56 -36 L53 -33 L41 -31 L28 -30 Z"/>
+      <g data-fx="earf"><path class="fx-fill" d="M32 -49 L36 -62 L40 -48 Z"/></g>
+      <path class="fx-eye" d="M40 -42.5 L44.5 -41"/>
+      <circle class="fx-nose" cx="55.5" cy="-35.5" r="1.4"/>
+    </g>
+   </g>
+  </g>
+</svg></div>
   <div class="container footer-grid">
     <div class="footer-brand">
       <a class="brand" href="#inicio" aria-label="Nyx Project">
@@ -391,5 +420,30 @@
     <a class="seal" href="/.well-known/security.txt"><svg class="i i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="seal">CSP estrita · sem cookies · estatísticas anônimas</span></a>
   </div>
 </footer>
+<!-- Desenho da raposa guia: copiado pelo script para a camada animada -->
+<template id="fox-tpl"><svg class="fox" viewBox="-64 -70 128 76" aria-hidden="true" focusable="false">
+  <g data-fx="root">
+   <g data-fx="pose">
+    <g class="fx-far">
+      <path data-fx="lbf" d="M0 0 C3 5 4 9 1 13 L1.5 22 L5.5 22.5"/>
+      <path data-fx="lff" d="M0 0 L0.5 12 L-0.5 22 L3.5 22.5"/>
+    </g>
+    <g data-fx="tail"><path class="fx-fill" d="M-24 -28 C-36 -25 -50 -25 -57 -35 C-61 -42 -58 -51 -52 -48 C-46 -39 -36 -37 -23 -35 Z"/><path class="fx-tip" d="M-57 -35 C-58.5 -41 -56 -46 -52 -48"/></g>
+    <path class="fx-fill" d="M-26 -30 C-22 -40 6 -43 24 -39 C32 -37 34 -28 28 -23 C22 -19 10 -20 -2 -20 C-12 -20 -22 -20 -26 -24 C-28 -26 -28 -28 -26 -30 Z"/>
+    <path class="fx-line" d="M22 -38 C27 -33 27 -27 24 -22"/>
+    <g class="fx-near">
+      <path data-fx="lbn" d="M0 0 C3 5 4 9 1 13 L1.5 22 L5.5 22.5"/>
+      <path data-fx="lfn" d="M0 0 L0.5 12 L-0.5 22 L3.5 22.5"/>
+    </g>
+    <g data-fx="head">
+      <g data-fx="earb"><path class="fx-fill" d="M26 -47 L25 -61 L32 -49 Z"/></g>
+      <path class="fx-fill" d="M19 -36 L25 -47 L33 -50 L40 -48 L45 -42 L56 -36 L53 -33 L41 -31 L28 -30 Z"/>
+      <g data-fx="earf"><path class="fx-fill" d="M32 -49 L36 -62 L40 -48 Z"/></g>
+      <path class="fx-eye" d="M40 -42.5 L44.5 -41"/>
+      <circle class="fx-nose" cx="55.5" cy="-35.5" r="1.4"/>
+    </g>
+   </g>
+  </g>
+</svg></template>
 </body>
 </html>

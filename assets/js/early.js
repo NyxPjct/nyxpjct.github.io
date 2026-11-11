@@ -2,6 +2,8 @@
 (function () {
   var d = document.documentElement, l = null;
   d.classList.add('js');
+  // movimento reduzido: marca cedo para a abertura e a raposa nem aparecerem
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('rm');
   try { l = localStorage.getItem('lang'); } catch (e) {}
   if (l !== 'pt' && l !== 'en') l = (navigator.language || '').toLowerCase().indexOf('pt') === 0 ? 'pt' : 'en';
   d.classList.add('l-' + l);

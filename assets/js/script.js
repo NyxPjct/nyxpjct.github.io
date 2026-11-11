@@ -321,7 +321,7 @@
   /* ---------- 4. Canvas: partículas conectadas que reagem ao mouse ---------- */
   function Particles() {
     var cv = $('.hero-canvas'); if (!cv || !cv.getContext) return;
-    var ctx = cv.getContext('2d'), host = cv.parentElement;
+    var ctx = cv.getContext('2d'), host = cv.closest('.hero') || cv.parentElement;
     var w = 0, h = 0, pts = [], m = { x: -1e4, y: -1e4 }, on = false, inView = false, raf = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
     var LINK = 125, MOUSE = 170;
     function size() {
@@ -524,6 +524,230 @@
     var go = function () { build(); if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { inView = e.isIntersecting; if (inView) start(); else stop(); }); }).observe(sec); else { inView = true; start(); } };
     // espera a fonte mono carregar para o "</>" sair com o desenho certo
     if (document.fonts && document.fonts.load) document.fonts.load('500 150px "JetBrains Mono"').then(go, go); else go();
+  }
+
+  /* ---------- 4c. Abertura cinematográfica ----------
+     O nome surge letra por letra. Ao rolar, a seção fica presa (pin): o fundo faz um zoom lento,
+     o conteúdo sobe e some, a cena escurece e as barras de cinema se recolhem. */
+  function Opening() {
+    var hero = $('[data-opening]'); if (!hero || RM || !window.gsap || !window.ScrollTrigger) return;
+    gsap.registerPlugin(ScrollTrigger);
+    var name = $('.hero-name', hero), text = name.textContent.trim();
+    name.setAttribute('aria-label', text); name.textContent = '';
+    text.split(/\s+/).forEach(function (word, wi, all) {
+      var w = document.createElement('span'); w.className = 'word'; w.setAttribute('aria-hidden', 'true');
+      word.split('').forEach(function (c) { var s = document.createElement('span'); s.className = 'ch'; s.textContent = c; w.appendChild(s); });
+      name.appendChild(w); if (wi < all.length - 1) name.appendChild(document.createTextNode(' '));
+    });
+    gsap.from($$('.ch', name), { opacity: 0, yPercent: 75, duration: .7, stagger: .045, ease: 'power3.out', delay: .2 });
+    var tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: {
+      trigger: hero, pin: true, scrub: .6, anticipatePin: 1, invalidateOnRefresh: true,
+      // se o conteúdo for mais alto que a tela (celular), a pessoa lê tudo e só depois a cena prende
+      start: function () { return hero.offsetHeight > window.innerHeight + 4 ? 'bottom bottom' : 'top top'; },
+      end: '+=90%'
+    } });
+    tl.to($('.hero-bg', hero), { scale: 1.25, duration: 1 }, 0)
+      .to($('.hero-grid', hero), { y: -50, opacity: 0, duration: .4 }, .55)
+      .to($('.hero-shade', hero), { opacity: 1, duration: .35 }, .65)
+      .to($('.lbox-t', hero), { scaleY: 0, duration: .2 }, .8)
+      .to($('.lbox-b', hero), { scaleY: 0, duration: .2 }, .8);
+  }
+
+  /* ---------- 4d. Raposa: rig (aplica a pose às partes do SVG) ----------
+     Partes separadas: corpo, 4 pernas, cauda, cabeça e orelhas. A pose é uma mistura de pesos:
+     walk/run (ciclo de passos), sit (sentada), lie (deitada), look (olhando), ear (orelha), wag (cauda). */
+  function FoxRig(svg) {
+    var q = function (k) { return svg.querySelector('[data-fx="' + k + '"]'); };
+    var P = { pose: q('pose'), tail: q('tail'), head: q('head'), earb: q('earb'), earf: q('earf'), lbf: q('lbf'), lff: q('lff'), lbn: q('lbn'), lfn: q('lfn') };
+    var HIP = { lbf: [-20, -24], lbn: [-14, -23], lff: [16, -24], lfn: [22, -23] };
+    return function (s) {
+      var w = s.walk, A = 20 + 16 * s.run, ph = s.phase, sit = s.sit, lie = s.lie;
+      var sw = { lfn: Math.sin(ph), lbf: Math.sin(ph), lff: Math.sin(ph + Math.PI), lbn: Math.sin(ph + Math.PI) };  // trote: pares diagonais
+      var bob = -Math.abs(Math.sin(ph)) * 1.4 * w;
+      P.pose.setAttribute('transform', 'translate(0 ' + (15 * sit + 15 * lie + bob).toFixed(2) + ') rotate(' + (-28 * sit).toFixed(2) + ' -18 -22)');
+      ['lbf', 'lbn', 'lff', 'lfn'].forEach(function (k) {
+        var front = k.charAt(1) === 'f', a = sw[k] * A * w, sy;
+        if (front) { a += 28 * sit - 82 * lie; sy = 1 + .16 * sit - .1 * lie; }
+        else { a += -62 * sit + 72 * lie; sy = 1 - .3 * sit - .15 * lie; }
+        P[k].setAttribute('transform', 'translate(' + HIP[k][0] + ' ' + HIP[k][1] + ') rotate(' + a.toFixed(2) + ') scale(1 ' + sy.toFixed(3) + ')');
+      });
+      var tail = Math.sin(ph * .5) * 7 * w - 14 * sit - 10 * lie + s.wag * Math.sin(s.t * 7) * 9 - 6 * s.run;
+      P.tail.setAttribute('transform', 'rotate(' + tail.toFixed(2) + ' -24 -31)');
+      P.head.setAttribute('transform', 'rotate(' + (22 * sit + 9 * lie - 12 * s.look + Math.sin(ph) * 1.5 * w + 6 * s.run).toFixed(2) + ' 22 -36)');
+      P.earb.setAttribute('transform', 'rotate(' + (-s.ear * 22).toFixed(2) + ' 27 -48)');
+      P.earf.setAttribute('transform', 'rotate(' + (-s.ear * 14).toFixed(2) + ' 34 -49)');
+    };
+  }
+  function foxPose(o) { var s = { phase: 0, walk: 0, run: 0, sit: 0, lie: 0, look: 0, ear: 0, wag: 0, t: 0 }; for (var k in o) s[k] = o[k]; return s; }
+
+  /* ---------- 4e. Raposa guia ----------
+     Computador (tela de 1360 px ou mais): a raposa segue uma linha curva (MotionPathPlugin) que desce em
+     zigue-zague pelas laterais e atravessa de um lado para o outro entre as seções.
+     A posição dela acompanha a rolagem (ScrollTrigger com scrub).
+     Celular / telas menores: anda numa faixa na base da tela.
+     Ela fica numa camada atrás do conteúdo e não recebe cliques. */
+  function FoxGuide() {
+    var still = $('.fox-static .fox'); if (still) FoxRig(still)(foxPose({ sit: 1 }));   // versão parada do rodapé
+    var tpl = $('#fox-tpl');
+    if (RM || !tpl || !window.gsap || !window.ScrollTrigger || !window.MotionPathPlugin) return;
+    gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
+    var NS = 'http://www.w3.org/2000/svg';
+    var layer = document.createElement('div'); layer.className = 'fox-layer'; layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = '<svg class="fox-trail" xmlns="' + NS + '"><defs><symbol id="nyx-paw" viewBox="-6 -6 12 12">' +
+      '<ellipse cx="0" cy="1.8" rx="2.6" ry="2.2"/><circle cx="-2.7" cy="-1.8" r="1"/><circle cx="-1" cy="-3.4" r="1"/><circle cx="1" cy="-3.4" r="1"/><circle cx="2.7" cy="-1.8" r="1"/></symbol></defs>' +
+      '<path class="fox-path"/><g class="fox-prints"></g></svg>';
+    var fox = tpl.content.querySelector('svg').cloneNode(true);
+    var main = $('main') || document.body; layer.appendChild(fox); main.insertBefore(layer, main.firstChild);
+    var pathEl = $('.fox-path', layer), prints = $('.fox-prints', layer), rig = FoxRig(fox);
+    var secs = ['#sobre', '#servicos', '#projetos', '#habilidades', '#contato'].map(function (s) { return $(s); });
+    if (secs.some(function (s) { return !s; })) return;
+    var card = $('.project'), form = $('[data-contact]');
+    if (card && !$('.fox-glow', card)) { var g = document.createElement('span'); g.className = 'fox-glow'; g.setAttribute('aria-hidden', 'true'); card.appendChild(g); }
+
+    var st = foxPose({ face: 1, s: 0 }), mode = '', total = 1, Ys = null, STEP = 4, tween = null, pos = { x: -100, y: 0, rotation: 0 };
+    var MT = 0, Ly = 0, H = 0, C = 1, lastMove = 0, stepAcc = 0, side = 1, prevS = 0, prevScroll = 0, d = 0, earNext = 0, looking = false;
+    var scroll = { v: 0 };
+    gsap.to(scroll, { v: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: .8, invalidateOnRefresh: true } });
+
+    function docRect(el) { var r = el.getBoundingClientRect(), y = (window.scrollY || window.pageYOffset) - (el === main ? 0 : MT); return { top: r.top + y, bottom: r.bottom + y, left: r.left, right: r.right, mid: (r.top + r.bottom) / 2 + y }; }
+    // linha com cantos arredondados passando pelos pontos
+    function rounded(pts, r) {
+      var out = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+      for (var i = 1; i < pts.length - 1; i++) {
+        var p = pts[i], a = pts[i - 1], b = pts[i + 1];
+        var la = Math.hypot(p[0] - a[0], p[1] - a[1]), lb = Math.hypot(b[0] - p[0], b[1] - p[1]), ra = Math.min(r, la / 2), rb = Math.min(r, lb / 2);
+        var p1 = [p[0] + (a[0] - p[0]) * ra / la, p[1] + (a[1] - p[1]) * ra / la], p2 = [p[0] + (b[0] - p[0]) * rb / lb, p[1] + (b[1] - p[1]) * rb / lb];
+        out += ' L' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + ' Q' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+      }
+      var z = pts[pts.length - 1]; return out + ' L' + z[0].toFixed(1) + ' ' + z[1].toFixed(1);
+    }
+    // zigue-zague de y0 até y1 dentro da lateral (centro c, meia largura a); o último ponto cai no lado "endX"
+    function zig(pts, c, a, y0, y1, endX, D) {
+      var n = Math.max(1, Math.round((y1 - y0) / D));
+      for (var j = 0; j <= n; j++) pts.push([((n - j) % 2 === 0) ? endX : (endX === c + a ? c - a : c + a), y0 + (y1 - y0) * j / n]);
+    }
+    function build() {
+      var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+      mode = vw >= 1360 ? 'path' : 'strip';
+      layer.classList.toggle('strip', mode === 'strip');
+      while (prints.firstChild) prints.removeChild(prints.firstChild);
+      if (mode === 'strip') { layer.style.height = ''; pathEl.setAttribute('d', ''); return; }
+      layer.style.height = '0px';
+      MT = docRect(main).top;                                       // a camada mora dentro do main
+      layer.style.height = main.scrollHeight + 'px';
+      var box = $('#sobre .container').getBoundingClientRect(), gl = box.left, a = Math.max(10, Math.min(60, gl / 2 - 48));   // a raposa (84 px) cabe inteira na lateral
+      var cL = gl / 2, cR = box.right + (vw - box.right) / 2, D = 110, R = secs.map(docRect), pts = [[-80, R[0].top + 40]];
+      var cardY = card ? docRect(card).mid : R[2].mid, formY = form ? docRect(form).mid : R[4].mid;
+      // Sobre (esquerda) → Serviços (direita)
+      zig(pts, cL, a, R[0].top + 90, R[0].bottom - 60, cL - a, D);
+      zig(pts, cR, a, R[1].top + 90, R[1].bottom - 60, cR + a, D);
+      // Projetos (esquerda): um vértice exatamente na altura do card em destaque, do lado mais perto dele
+      zig(pts, cL, a, R[2].top + 90, cardY, cL + a, D);
+      var tail = []; zig(tail, cL, a, cardY, R[2].bottom - 60, cL + a, D);
+      // zig termina no lado pedido; aqui o primeiro ponto precisa ser o do card, então espelha a alternância
+      tail = tail.map(function (p, j) { return [(j % 2 === 0) ? cL + a : cL - a, p[1]]; }).slice(1); pts = pts.concat(tail);
+      // Habilidades (direita), depois Contato (direita): termina ao lado do formulário, no lado mais perto dele
+      zig(pts, cR, a, R[3].top + 90, R[3].bottom - 60, cR + a, D);
+      zig(pts, cR, a, R[4].top + 90, formY, cR - a, D);
+      pathEl.setAttribute('d', rounded(pts, 22));
+      total = pathEl.getTotalLength();
+      var n = Math.ceil(total / STEP) + 1; Ys = new Float32Array(n);
+      for (var k = 0; k < n; k++) Ys[k] = pathEl.getPointAtLength(Math.min(total, k * STEP)).y;
+      for (k = 1; k < n; k++) if (Ys[k] < Ys[k - 1]) Ys[k] = Ys[k - 1];     // garante ordem crescente para a busca
+      pathEl.style.strokeDasharray = total; pathEl.style.strokeDashoffset = total;
+      if (tween) tween.kill();
+      tween = gsap.to(pos, { motionPath: { path: pathEl, autoRotate: true }, duration: 1, ease: 'none', paused: true });
+      // parada em Projetos (H) e corrida para recuperar em Habilidades (C)
+      Ly = cardY; H = vh * .55; C = Math.max(300, R[3].bottom - 60 - (Ly + H));
+    }
+    function remap(t) {
+      if (t < Ly) return t;
+      if (t < Ly + H) return Ly;
+      if (t < Ly + H + C) return Ly + (t - Ly - H) * (C + H) / C;
+      return t;
+    }
+    function lengthAtY(y) {
+      var lo = 0, hi = Ys.length - 1; if (y <= Ys[0]) return 0; if (y >= Ys[hi]) return total;
+      while (hi - lo > 1) { var m = (lo + hi) >> 1; if (Ys[m] < y) lo = m; else hi = m; }
+      var f = (y - Ys[lo]) / Math.max(.001, Ys[hi] - Ys[lo]); return Math.min(total, (lo + f) * STEP);
+    }
+    function paw(x, y, ang) {
+      var u = document.createElementNS(NS, 'use'); u.setAttribute('href', '#nyx-paw'); u.setAttribute('class', 'fox-paw');
+      u.setAttribute('width', 9); u.setAttribute('height', 9); u.setAttribute('x', -4.5); u.setAttribute('y', -4.5);
+      u.setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + (ang + 90).toFixed(1) + ')');
+      prints.appendChild(u);
+      gsap.fromTo(u, { opacity: .7 }, { opacity: 0, duration: 2.6, delay: .4, ease: 'power1.in', onComplete: function () { if (u.parentNode) u.parentNode.removeChild(u); } });
+      while (prints.childNodes.length > 40) prints.removeChild(prints.firstChild);
+    }
+    function ease(cur, to, k) { return cur + (to - cur) * k; }
+
+    function tick() {
+      var now = performance.now(), vh = window.innerHeight, scrollPx = scroll.v * ScrollTrigger.maxScroll(window);
+      st.t = now / 1000;
+      var x, y, travel = 0, moving, ds, run = 0, hold = false, lie = false, show;
+      if (mode === 'path' && Ys) {
+        var t = scrollPx + vh * .6 - MT, s = lengthAtY(remap(t));
+        ds = s - prevS; prevS = s;
+        tween.progress(s / total); x = pos.x; y = pos.y;
+        travel = pos.rotation + (ds < 0 ? 180 : 0);
+        hold = t >= Ly && t < Ly + H && Math.abs(remap(t) - Ly) < 1;
+        run = t >= Ly + H && t < Ly + H + C ? 1 : 0;
+        lie = s >= total - 2;
+        show = s > 2;
+        pathEl.style.strokeDashoffset = (total - s).toFixed(1);
+      } else {
+        // faixa na base da tela: anda de um lado para o outro conforme a rolagem
+        var vw = document.documentElement.clientWidth, m = 46, W = Math.max(40, vw - 2 * m), dsc = scrollPx - prevScroll; prevScroll = scrollPx;
+        var rc = card ? card.getBoundingClientRect() : null, rf = secs[4].getBoundingClientRect(), rs = secs[3].getBoundingClientRect();
+        hold = !!rc && (rc.top + rc.bottom) / 2 > vh * .3 && (rc.top + rc.bottom) / 2 < vh * .7;
+        lie = rf.top < vh * .55;
+        run = rs.top < vh * .6 && rs.bottom > vh * .4 ? 1 : 0;
+        var dd = (hold || lie) ? 0 : dsc * .45 * (run ? 1.9 : 1);
+        d += dd; ds = dd;
+        var p2 = ((d % (2 * W)) + 2 * W) % (2 * W), prevX = st.sx === undefined ? m : st.sx;
+        x = m + (p2 < W ? p2 : 2 * W - p2); y = 76;
+        travel = x > prevX ? 0 : x < prevX ? 180 : (st.face > 0 ? 0 : 180); st.sx = x;
+        show = secs[0].getBoundingClientRect().top < vh * .9;
+      }
+      moving = Math.abs(ds) > .15;
+      if (moving) {
+        lastMove = now;
+        var faceTo = Math.cos(travel * Math.PI / 180) >= 0 ? 1 : -1;
+        st.faceTo = faceTo;
+        st.phase += Math.abs(ds) * .13 / (1 + .35 * st.run);
+        stepAcc += Math.abs(ds);
+        if (stepAcc > (st.run > .5 ? 34 : 26)) {
+          stepAcc = 0; side = -side;
+          var rad = travel * Math.PI / 180, nx = -Math.sin(rad) * 3.5 * side, ny = Math.cos(rad) * 3.5 * side;
+          paw(x + nx, (mode === 'path' ? y - 2 : 79) + ny, travel);
+        }
+      }
+      var idle = now - lastMove > 350;
+      st.face = ease(st.face, st.faceTo || 1, .22);
+      st.walk = ease(st.walk, moving ? 1 : 0, .18);
+      st.run = ease(st.run, run, .06);
+      st.lie = ease(st.lie, lie && idle ? 1 : 0, .06);
+      st.sit = ease(st.sit, idle && !lie ? 1 : 0, moving ? .3 : .07);
+      st.look = ease(st.look, hold && idle ? 1 : 0, .06);
+      st.wag = ease(st.wag, idle && !lie ? 1 : 0, .05);
+      // de vez em quando mexe as orelhas quando está parada
+      if (idle && now > earNext) { earNext = now + 2200 + Math.random() * 2600; gsap.fromTo(st, { ear: 1 }, { ear: 0, duration: .5, ease: 'power2.out' }); }
+      // em Projetos: olha para o card em destaque
+      if (card) { var look = hold && st.look > .5; if (look !== looking) { looking = look; card.classList.toggle('fox-look', look); } }
+      if (hold && mode === 'path') st.faceTo = 1;
+      // inclinação acompanha a ladeira do caminho (limitada)
+      var tilt = 0;
+      if (mode === 'path') { tilt = st.face >= 0 ? travel : travel - 180; tilt = ((tilt + 540) % 360) - 180; tilt = Math.max(-30, Math.min(30, tilt)) * (1 - st.sit) * (1 - st.lie); }
+      st.tilt = ease(st.tilt || 0, tilt, .2);
+      var ox = mode === 'path' ? 42 : 39, oy = mode === 'path' ? 45.94 : 42.75;
+      fox.style.transform = 'translate3d(' + (x - ox).toFixed(1) + 'px,' + (y - oy).toFixed(1) + 'px,0) rotate(' + st.tilt.toFixed(2) + 'deg) scaleX(' + st.face.toFixed(3) + ')';
+      fox.classList.toggle('in', !!show);
+      rig(st);
+    }
+    build();
+    ScrollTrigger.addEventListener('refresh', build);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    gsap.ticker.add(tick);
   }
 
   /* ---------- 5. Terminal interativo ---------- */
@@ -783,5 +1007,5 @@
 
   /* ---------- Início ---------- */
   Nav(); Hero(); Particles(); Story(); Terminal(); Cards(); GitHubStats(); TryHackMe(); ContactForm(); Palette(); Stats();
-  ScrollAnimations();
+  Opening(); ScrollAnimations(); FoxGuide();
 })();
