@@ -81,6 +81,18 @@
   "term_hint": "dica: digite help e aperte Enter"
  },
  "en": {
+  "story_label": "How I work",
+  "st1_k": "build",
+  "st1_t": "From zero to shipped.",
+  "st1_p": "Apps for phone, web and desktop, made for the people who use them every day.",
+  "st2_k": "test",
+  "st2_t": "I find where it breaks.",
+  "st2_p": "Web application pentesting: I find the flaws before the wrong people do.",
+  "st3_k": "protect",
+  "st3_t": "And I lock the door.",
+  "st3_p": "Encryption, authentication and hardening from the first line of code.",
+  "st4_k": "signature",
+  "st4_p": "Where I ship my apps and security content.",
   "meta_title": "Manoela Fasanello — App Developer & Cybersecurity · Nyx Project",
   "meta_desc": "Portfolio of Manoela Fasanello: mobile, web and desktop app development, and cybersecurity focused on web application pentesting.",
   "menu_open": "Open menu",
@@ -347,6 +359,173 @@
     else { size(); start(); }
   }
 
+  /* ---------- 4b. Cena cinematográfica: partículas que mudam de forma com a rolagem ----------
+     Formas: espalhado → </> → mira → escudo → raposa NYX. Cada forma é desenhada num canvas
+     escondido e "amostrada" em pontos; cada partícula viaja entre o ponto i de uma forma e o
+     ponto i da próxima. A seção é alta e o palco é sticky, então a rolagem vira a linha do tempo. */
+  function Story() {
+    var sec = $('[data-story]'); if (!sec) return;
+    var cv = $('.story-canvas', sec);
+    if (RM || !cv || !cv.getContext) return;                     // movimento reduzido: fica a lista simples
+    sec.classList.add('on');
+    var ctx = cv.getContext('2d'), chapters = $$('.chapter', sec), steps = $$('.story-steps i', sec);
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), w = 0, h = 0, wide = false;
+    var N = window.innerWidth < 700 ? 1600 : 3000, SHAPES = [], ready = false;
+    var X = new Float32Array(N), Y = new Float32Array(N), Z = new Float32Array(N), D = new Float32Array(N), R = new Float32Array(N);
+    var B = new Uint8Array(N), HI = [];
+    var prog = 0, sp = 0, mx = 0, my = 0, smx = 0, smy = 0, raf = 0, on = false, inView = false, last = -1;
+    for (var i = 0; i < N; i++) { D[i] = Math.random(); R[i] = Math.random(); }
+
+    // amostra os pixels pintados de um desenho 360×360 e devolve N pontos em [-1, 1]
+    function sample(draw, hiDraw) {
+      var S = 360, c = document.createElement('canvas'); c.width = c.height = S;
+      var g = c.getContext('2d', { willReadFrequently: true }); g.fillStyle = g.strokeStyle = '#fff'; g.lineCap = g.lineJoin = 'round';
+      draw(g, S);
+      var data = g.getImageData(0, 0, S, S).data, pool = [], edge = [], x, y;
+      var on = function (x, y) { return x >= 0 && y >= 0 && x < S && y < S && data[(y * S + x) * 4 + 3] > 128; };
+      for (y = 0; y < S; y += 2) for (x = 0; x < S; x += 2) if (on(x, y)) {
+        pool.push(x, y);
+        // borda = pixel pintado com vizinho vazio: recebe mais partículas, para o contorno ficar nítido
+        if (!on(x + 5, y) || !on(x - 5, y) || !on(x, y + 5) || !on(x, y - 5)) edge.push(x, y);
+      }
+      var hiPool = [];
+      if (hiDraw) {
+        g.clearRect(0, 0, S, S); hiDraw(g, S); data = g.getImageData(0, 0, S, S).data;
+        for (y = 0; y < S; y += 2) for (x = 0; x < S; x += 2) if (data[(y * S + x) * 4 + 3] > 128) hiPool.push(x, y);
+      }
+      var out = { x: new Float32Array(N), y: new Float32Array(N), z: new Float32Array(N), hi: new Uint8Array(N) };
+      var nHi = hiPool.length ? Math.round(N * .07) : 0;
+      for (var k = 0; k < N; k++) {
+        var src = k < nHi ? hiPool : (edge.length && Math.random() < .5 ? edge : pool), j = (Math.random() * (src.length / 2)) | 0;
+        out.x[k] = (src[j * 2] + Math.random() * 2 - S / 2) / (S / 2);
+        out.y[k] = (src[j * 2 + 1] + Math.random() * 2 - S / 2) / (S / 2);
+        out.z[k] = (Math.random() - .5) * .14;
+        out.hi[k] = k < nHi ? 1 : 0;
+      }
+      // embaralha para que cada partícula viaje para um lugar diferente a cada forma (dá o redemoinho)
+      for (k = N - 1; k > 0; k--) {
+        var r = (Math.random() * (k + 1)) | 0, t;
+        t = out.x[k]; out.x[k] = out.x[r]; out.x[r] = t; t = out.y[k]; out.y[k] = out.y[r]; out.y[r] = t;
+        t = out.z[k]; out.z[k] = out.z[r]; out.z[r] = t; t = out.hi[k]; out.hi[k] = out.hi[r]; out.hi[r] = t;
+      }
+      return out;
+    }
+    function scatter() {
+      var o = { x: new Float32Array(N), y: new Float32Array(N), z: new Float32Array(N), hi: new Uint8Array(N) };
+      for (var k = 0; k < N; k++) {
+        var a = Math.random() * 6.2832, b = Math.acos(Math.random() * 2 - 1), r = 1.3 + Math.random() * 1.5;
+        o.x[k] = r * Math.sin(b) * Math.cos(a) * 1.6; o.y[k] = r * Math.sin(b) * Math.sin(a); o.z[k] = r * Math.cos(b);
+      }
+      return o;
+    }
+    function poly(g, pts) { g.beginPath(); g.moveTo(pts[0], pts[1]); for (var k = 2; k < pts.length; k += 2) g.lineTo(pts[k], pts[k + 1]); g.closePath(); }
+    function build() {
+      SHAPES = [
+        scatter(),
+        // 1. </> — construir
+        sample(function (g, S) { g.font = '500 150px "JetBrains Mono", ui-monospace, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('</>', S / 2, S / 2 + 6); }),
+        // 2. mira — testar
+        sample(function (g, S) {
+          var c = S / 2; g.lineWidth = 16; g.beginPath(); g.arc(c, c, 128, 0, 6.2832); g.stroke();
+          g.lineWidth = 11; g.beginPath(); g.arc(c, c, 62, 0, 6.2832); g.stroke();
+          g.lineWidth = 12; [[c, 8, c, 92], [c, 268, c, 352], [8, c, 92, c], [268, c, 352, c]].forEach(function (l) { g.beginPath(); g.moveTo(l[0], l[1]); g.lineTo(l[2], l[3]); g.stroke(); });
+          g.beginPath(); g.arc(c, c, 14, 0, 6.2832); g.fill();
+        }, function (g, S) { g.beginPath(); g.arc(S / 2, S / 2, 14, 0, 6.2832); g.fill(); }),
+        // 3. escudo com check — proteger
+        sample(function (g) {
+          g.beginPath(); g.moveTo(180, 22); g.lineTo(312, 72); g.lineTo(312, 170);
+          g.bezierCurveTo(312, 252, 256, 312, 180, 340); g.bezierCurveTo(104, 312, 48, 252, 48, 170); g.lineTo(48, 72); g.closePath(); g.fill();
+          g.globalCompositeOperation = 'destination-out'; g.lineWidth = 30;
+          g.beginPath(); g.moveTo(118, 182); g.lineTo(162, 226); g.lineTo(246, 140); g.stroke();
+          g.globalCompositeOperation = 'source-over';
+        }),
+        // 4. raposa NYX (geométrica), com olhos e o losango da testa em destaque
+        sample(function (g) {
+          poly(g, [62, 26, 150, 128, 210, 128, 298, 26, 306, 168, 338, 214, 244, 262, 180, 336, 116, 262, 22, 214, 54, 168]); g.fill();
+          g.globalCompositeOperation = 'destination-out';
+          poly(g, [86, 70, 136, 128, 98, 140]); g.fill(); poly(g, [274, 70, 224, 128, 262, 140]); g.fill();      // dentro das orelhas
+          poly(g, [104, 196, 162, 204, 146, 220]); g.fill(); poly(g, [256, 196, 198, 204, 214, 220]); g.fill();  // olhos
+          poly(g, [180, 140, 192, 162, 180, 184, 168, 162]); g.fill();                                          // losango
+          g.globalCompositeOperation = 'source-over';
+        }, function (g) {
+          poly(g, [104, 196, 162, 204, 146, 220]); g.fill(); poly(g, [256, 196, 198, 204, 214, 220]); g.fill();
+          poly(g, [180, 140, 192, 162, 180, 184, 168, 162]); g.fill();
+        })
+      ];
+      ready = true; frame(performance.now());
+    }
+
+    function size() {
+      var r = cv.getBoundingClientRect(); w = r.width; h = r.height; wide = w >= 900;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      last = -1;
+    }
+    function measure() {                                           // 0 → 1 ao longo da seção
+      var r = sec.getBoundingClientRect(), span = r.height - window.innerHeight;
+      prog = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+    }
+    function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+    var COLORS = ['rgba(124,58,237,.55)', 'rgba(167,139,250,.6)', 'rgba(196,181,253,.7)', 'rgba(237,233,254,.85)'];
+
+    function frame(now) {
+      if (!ready || !w) return;
+      sp += (prog - sp) * .09;                                     // inércia: a cena "desliza" atrás da rolagem
+      smx += (mx - smx) * .05; smy += (my - smy) * .05;
+      var u = Math.min(sp * 4, 3.9999), k = Math.floor(u), f = u - k;
+      var A = SHAPES[k], Bs = SHAPES[k + 1], mt = Math.min(1, f / .45);
+      var time = now * .001, rotY = Math.sin(time * .35) * .3 + smx * .35, rotX = Math.sin(time * .27) * .1 + smy * .2;
+      var cy = Math.cos(rotY), sy = Math.sin(rotY), cx = Math.cos(rotX), sx = Math.sin(rotX);
+      var S = wide ? Math.min(w * .26, h * .36) : Math.min(w * .42, h * .27), ox = wide ? w * .68 : w / 2, oy = wide ? h / 2 : h * .36;
+      var breathe = 1 + Math.sin(time * 1.3) * .012;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < N; i++) {
+        var m = Math.min(1, Math.max(0, mt * 1.5 - D[i] * .5)), e = ease(m), arc = Math.sin(e * Math.PI);
+        var x = A.x[i] + (Bs.x[i] - A.x[i]) * e + arc * (D[i] - .5) * .9;
+        var y = A.y[i] + (Bs.y[i] - A.y[i]) * e + arc * (R[i] - .5) * .9;
+        var z = A.z[i] + (Bs.z[i] - A.z[i]) * e + arc * (D[i] + R[i] - 1) * 1.2;
+        // flutuação suave quando a forma está montada
+        x += Math.sin(time * 1.1 + R[i] * 40) * .006; y += Math.cos(time * .9 + D[i] * 40) * .006;
+        var x1 = x * cy - z * sy, z1 = x * sy + z * cy, y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+        var p = 2.6 / (2.6 + z2);
+        X[i] = ox + x1 * S * p * breathe; Y[i] = oy + y1 * S * p * breathe; Z[i] = p;
+        var hi = e > .5 ? Bs.hi[i] : A.hi[i];
+        B[i] = hi ? 3 : (p > 1.04 ? 2 : p > .96 ? 1 : 0);
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      for (var b = 0; b < 4; b++) {
+        ctx.fillStyle = COLORS[b]; var base = b === 3 ? 2.4 : 1.5;
+        for (i = 0; i < N; i++) if (B[i] === b) { var s = base * Z[i]; ctx.fillRect(X[i] - s / 2, Y[i] - s / 2, s, s); }
+      }
+      ctx.globalCompositeOperation = 'source-over';
+
+      // capítulos: entram depois que a forma se monta e saem antes da próxima
+      var idx = Math.round(sp * 4 * 1000) / 1000;
+      chapters.forEach(function (c, n) {
+        var local = idx - n, a;
+        if (n === chapters.length - 1) a = Math.min(1, Math.max(0, (local - .3) / .2));
+        else a = Math.min(1, Math.max(0, (local - .3) / .2)) * Math.min(1, Math.max(0, (1 - local) / .12));
+        var dy = local < .65 ? (1 - a) * 28 : -(1 - a) * 28;
+        c.style.opacity = a.toFixed(3); c.style.transform = 'translate3d(0,' + dy.toFixed(1) + 'px,0)';
+        c.setAttribute('aria-hidden', a < .5 ? 'true' : 'false');
+      });
+      steps.forEach(function (s, n) { s.style.transform = 'scaleY(' + Math.min(1, Math.max(0, u - n)).toFixed(3) + ')'; });
+    }
+    function loop(now) { measure(); frame(now); raf = requestAnimationFrame(loop); }
+    function start() { if (on || document.hidden) return; on = true; raf = requestAnimationFrame(loop); }
+    function stop() { on = false; cancelAnimationFrame(raf); }      // canvas pausado fora da tela
+
+    window.addEventListener('pointermove', function (e) {
+      if (!inView || e.pointerType !== 'mouse') return;
+      mx = e.clientX / window.innerWidth * 2 - 1; my = e.clientY / window.innerHeight * 2 - 1;
+    }, { passive: true });
+    var tm; window.addEventListener('resize', function () { clearTimeout(tm); tm = setTimeout(size, 150); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else if (inView) start(); });
+    size(); measure(); sp = prog;
+    var go = function () { build(); if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { inView = e.isIntersecting; if (inView) start(); else stop(); }); }).observe(sec); else { inView = true; start(); } };
+    // espera a fonte mono carregar para o "</>" sair com o desenho certo
+    if (document.fonts && document.fonts.load) document.fonts.load('500 150px "JetBrains Mono"').then(go, go); else go();
+  }
+
   /* ---------- 5. Terminal interativo ---------- */
   function Terminal() {
     var el = $('[data-term]'); if (!el) return;
@@ -603,6 +782,6 @@
   }
 
   /* ---------- Início ---------- */
-  Nav(); Hero(); Particles(); Terminal(); Cards(); GitHubStats(); TryHackMe(); ContactForm(); Palette(); Stats();
+  Nav(); Hero(); Particles(); Story(); Terminal(); Cards(); GitHubStats(); TryHackMe(); ContactForm(); Palette(); Stats();
   ScrollAnimations();
 })();

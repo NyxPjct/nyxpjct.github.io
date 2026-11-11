@@ -27,13 +27,13 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/style.css?v=ffd2ccd070">
+<link rel="stylesheet" href="assets/css/style.css?v=8cfeec9c88">
 <!-- early.js: marca idioma e JS antes de pintar a página (evita piscar) -->
 <script src="assets/js/early.js?v=6c675aefc0"></script>
 <!-- GSAP + ScrollTrigger hospedados no próprio site (sem CDN, por causa da CSP) -->
 <script src="assets/vendor/gsap.min.js?v=3d1bea374a" defer></script>
 <script src="assets/vendor/ScrollTrigger.min.js?v=b5bb360661" defer></script>
-<script src="assets/js/script.js?v=a328b95c91" defer></script>
+<script src="assets/js/script.js?v=df49250864" defer></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Manoela Fasanello", "url": "https://nyxpjct.github.io/", "image": "https://nyxpjct.github.io/assets/og-image.jpg", "jobTitle": "Desenvolvedora de apps e Cybersecurity", "description": "Desenvolvedora de apps para celular, web e desktop, com foco em segurança e pentest de aplicações web.", "address": {"@type": "PostalAddress", "addressLocality": "Praia Grande", "addressRegion": "SP", "addressCountry": "BR"}, "knowsAbout": ["Desenvolvimento de apps", "Cybersecurity", "Pentest de aplicações web", "TypeScript", "React", "Python"], "sameAs": ["https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/", "https://github.com/NyxPjct", "https://tryhackme.com/p/ATHOS", "https://www.instagram.com/nyxprojectr"]}</script>
 </head>
 <body>
@@ -102,6 +102,39 @@
         </form>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ========== 1b. CENA CINEMATOGRÁFICA ==========
+     A seção é alta (vários "andares" de rolagem) e o palco fica preso na tela (sticky).
+     Conforme a pessoa rola, as partículas do canvas mudam de forma: </> → mira → escudo → raposa.
+     Sem JavaScript ou com movimento reduzido, os capítulos aparecem como uma lista simples. -->
+<section class="story" id="historia" aria-label="Como eu trabalho" data-i18n-attr="aria-label:story_label" data-story>
+  <div class="story-stage">
+    <canvas class="story-canvas" aria-hidden="true"></canvas>
+    <div class="story-chapters">
+      <article class="chapter" data-chapter="0">
+        <p class="chapter-k"><span>01</span> <span data-i18n="st1_k">construir</span></p>
+        <h2 class="chapter-t" data-i18n="st1_t">Do zero ao publicado.</h2>
+        <p class="chapter-p" data-i18n="st1_p">Apps para celular, web e desktop, pensados para quem vai usar todo dia.</p>
+      </article>
+      <article class="chapter" data-chapter="1">
+        <p class="chapter-k"><span>02</span> <span data-i18n="st2_k">testar</span></p>
+        <h2 class="chapter-t" data-i18n="st2_t">Procuro onde quebra.</h2>
+        <p class="chapter-p" data-i18n="st2_p">Pentest de aplicações web: encontro as falhas antes de quem não deveria.</p>
+      </article>
+      <article class="chapter" data-chapter="2">
+        <p class="chapter-k"><span>03</span> <span data-i18n="st3_k">proteger</span></p>
+        <h2 class="chapter-t" data-i18n="st3_t">E fecho a porta.</h2>
+        <p class="chapter-p" data-i18n="st3_p">Criptografia, autenticação e hardening desde a primeira linha de código.</p>
+      </article>
+      <article class="chapter" data-chapter="3">
+        <p class="chapter-k"><span>04</span> <span data-i18n="st4_k">assinatura</span></p>
+        <h2 class="chapter-t">Nyx Project.</h2>
+        <p class="chapter-p" data-i18n="st4_p">Onde eu publico meus apps e conteúdo de segurança.</p>
+      </article>
+    </div>
+    <ol class="story-steps" aria-hidden="true"><li><i></i></li><li><i></i></li><li><i></i></li><li><i></i></li></ol>
   </div>
 </section>
 

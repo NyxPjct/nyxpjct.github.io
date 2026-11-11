@@ -368,3 +368,37 @@ kbd { font: 500 12px var(--font-mono); color: var(--text-2); border: 1px solid v
   .js [data-hero] { opacity: 1; transform: none; }
   .card-glow { transform: none; }
 }
+
+/* ==========================================================================
+   Cena cinematográfica (seção #historia)
+   Sem a classe .on (sem JS ou com movimento reduzido) os capítulos viram uma lista.
+   Com .on, a seção ganha altura de rolagem e o palco fica preso na tela.
+   ========================================================================== */
+.story { position: relative; border-top: 1px solid var(--border); padding: 80px 0; }
+.story-canvas, .story-steps { display: none; }
+.story-chapters { width: min(100% - 40px, var(--container)); margin-inline: auto; display: grid; gap: 36px; }
+.chapter-k { font: 500 13px var(--font-mono); color: var(--accent); margin-bottom: 12px; display: flex; gap: 10px; }
+.chapter-k span:first-child { color: var(--muted); }
+.chapter-t { font-size: clamp(32px, 5.6vw, 64px); line-height: 1.02; letter-spacing: -.035em; font-weight: 700; margin-bottom: 14px; }
+.chapter-p { color: var(--text-2); font-size: 17px; line-height: 1.6; max-width: 420px; }
+@media (min-width: 900px) { .story-chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 64px; } }
+
+.story.on { height: 460vh; padding: 0; }
+.story.on .story-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+  background: radial-gradient(60% 55% at 50% 34%, rgba(124, 58, 237, .16), transparent 70%), var(--bg); }
+.story.on .story-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.story.on .story-chapters { position: absolute; inset: 0; gap: 0; align-items: end; padding-bottom: max(64px, 9vh); pointer-events: none; }
+.story.on .chapter { grid-area: 1 / 1; opacity: 0; will-change: transform, opacity; }
+.story.on .chapter-t { font-size: clamp(34px, 9vw, 72px); }
+/* leve escurecimento embaixo para o texto ler bem sobre as partículas no celular */
+.story.on .story-stage::after { content: ''; position: absolute; inset: auto 0 0; height: 50%; background: linear-gradient(to top, rgba(10, 10, 15, .92), transparent); pointer-events: none; }
+.story.on .story-chapters { z-index: 1; }
+.story.on .story-steps { display: flex; flex-direction: column; gap: 8px; position: absolute; right: max(16px, 3vw); top: 50%; transform: translateY(-50%); z-index: 1; }
+.story-steps li { width: 2px; height: 34px; background: var(--border-2); border-radius: 2px; overflow: hidden; }
+.story-steps i { display: block; width: 100%; height: 100%; background: var(--accent); transform: scaleY(0); transform-origin: 50% 0; }
+@media (min-width: 900px) {
+  .story.on .story-stage { background: radial-gradient(45% 60% at 66% 50%, rgba(124, 58, 237, .16), transparent 70%), var(--bg); }
+  .story.on .story-chapters { grid-template-columns: minmax(0, 1fr); align-items: center; padding-bottom: 0; }
+  .story.on .chapter { max-width: 460px; }
+  .story.on .story-stage::after { inset: 0 auto 0 0; width: 55%; height: auto; background: linear-gradient(to right, rgba(10, 10, 15, .85), transparent); }
+}
