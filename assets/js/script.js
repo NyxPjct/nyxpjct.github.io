@@ -84,7 +84,7 @@
   "st_hub": "client · 2026",
   "plat_hub": "Online store",
   "visit_store": "Visit store",
-  "pd_hub": "Online store built for a team abroad that is just starting to sell. A general store with sports, fitness and everyday items, prices in pounds, euros and dollars, and Stripe checkout.",
+  "pd_hub": "Online store built for an overseas business taking its first steps in e-commerce. I organized the sports, fitness and lifestyle catalog, set up pricing in pounds, euros and dollars, and integrated Stripe checkout.",
   "story_label": "How I work",
   "st1_k": "build",
   "st1_t": "From zero to shipped.",
