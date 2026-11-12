@@ -463,3 +463,10 @@ main, .footer { position: relative; z-index: 1; }
 .fox-static .fox { width: 112px; height: 67px; display: block; }
 html:not(.js) .fox-static, .rm .fox-static { display: block; }
 @media (prefers-reduced-motion: reduce) { .fox-layer { display: none; } .fox-static { display: block; } }
+
+/* card largo (trabalho para cliente): imagem ao lado do texto nas telas grandes */
+@media (min-width: 640px) {
+  .project.wide { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .project.wide .shot { aspect-ratio: auto; min-height: 100%; border-bottom: 0; border-right: 1px solid var(--border); }
+  .project.wide .shot svg { width: 100%; height: 100%; display: block; }
+}
