@@ -17,6 +17,8 @@
       linkedin: 'https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/',
       github: 'https://github.com/NyxPjct',
       instagram: 'https://www.instagram.com/nyxprojectr',
+      tiktok: 'https://www.tiktok.com/@manufsnl',
+      x: 'https://x.com/athosmanuf',
       tryhackme: 'https://tryhackme.com/p/ATHOS'
     },
     apps: { dailyapp: 'DailyAPP', drawsketch: 'DrawSketch', marketai: 'MarketAI', honeymoney: 'HoneyMoney' },
@@ -69,7 +71,7 @@
   "term_thm": "ATHOS · Top 15% · nível 8 · 44 salas · 7 badges · 4.129 pontos\ntrilha atual: Jr Penetration Tester",
   "term_about": "Curso Defesa Cibernética na Estácio, desenvolvo apps e estudo segurança ofensiva. No Nyx Project publico conteúdo de segurança e divulgo meus apps.",
   "term_nofile": ": arquivo não encontrado",
-  "term_openuse": "uso: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram",
+  "term_openuse": "uso: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram | tiktok | x",
   "term_opening": "abrindo ",
   "term_sudo1": "[sudo] senha para recrutadora: ********",
   "term_sudo2": "acesso concedido. o caminho mais rápido é este:",
@@ -192,7 +194,7 @@
   "term_thm": "ATHOS · Top 15% · level 8 · 44 rooms · 7 badges · 4,129 points\ncurrent path: Jr Penetration Tester",
   "term_about": "I study Cyber Defense at Estácio, build apps and study offensive security. On Nyx Project I share security content and showcase my apps.",
   "term_nofile": ": no such file",
-  "term_openuse": "usage: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram",
+  "term_openuse": "usage: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram | tiktok | x",
   "term_opening": "opening ",
   "term_sudo1": "[sudo] password for recruiter: ********",
   "term_sudo2": "access granted. fastest route:",
@@ -785,7 +787,7 @@
       else if (c === 'projects') { line(TT('proj'), 't-dim'); PROJ.forEach(function (p) { link('', CONFIG.github + '/' + p[0], p[0], pad('', 13 - p[0].length) + p[1]); }); line(TT('more'), 't-dim'); }
       else if (c === 'ls') line(TT('ls'), 't-mut');
       else if (c === 'stack') TT('stack').split('|').forEach(function (s) { var x = s.split('='); line(pad(x[0], 12) + x[1], 't-mut'); });
-      else if (c === 'contact') { link(pad('linkedin', 11), CONFIG.links.linkedin, 'manoela-fasanello'); link(pad('github', 11), CONFIG.links.github, 'NyxPjct'); link(pad('instagram', 11), CONFIG.links.instagram, '@nyxprojectr'); link(pad('tryhackme', 11), CONFIG.links.tryhackme, 'ATHOS'); }
+      else if (c === 'contact') { link(pad('linkedin', 11), CONFIG.links.linkedin, 'manoela-fasanello'); link(pad('github', 11), CONFIG.links.github, 'NyxPjct'); link(pad('instagram', 11), CONFIG.links.instagram, '@nyxprojectr'); link(pad('tiktok', 11), CONFIG.links.tiktok, '@manufsnl'); link(pad('x', 11), CONFIG.links.x, '@athosmanuf'); link(pad('tryhackme', 11), CONFIG.links.tryhackme, 'ATHOS'); }
       else if (c === 'tryhackme') { line(TT('thm'), 't-mut'); link('', CONFIG.links.tryhackme, 'tryhackme.com/p/ATHOS'); }
       else if (c === 'cat') { var f = { 'foco.txt': 'focus', 'focus.txt': 'focus', 'sobre.txt': 'about', 'about.txt': 'about' }[arg]; if (f) line(TT(f), 't-mut'); else line('cat: ' + (arg || '?') + TT('nofile'), 't-err'); }
       else if (c === 'about') line(TT('about'), 't-mut');
@@ -957,7 +959,7 @@
         out.push({ label: t(s[0]), hint: t('pal_sec'), run: function () { var el = $(s[1]); if (el) el.scrollIntoView({ behavior: RM ? 'auto' : 'smooth' }); } });
       });
       Object.keys(CONFIG.apps).forEach(function (k) { out.push({ label: CONFIG.apps[k], hint: 'case', run: function () { go(k); } }); });
-      [['GitHub', 'github'], ['LinkedIn', 'linkedin'], ['TryHackMe', 'tryhackme'], ['Instagram', 'instagram']].forEach(function (x) { out.push({ label: x[0], hint: t('pal_link'), run: function () { go(x[1]); } }); });
+      [['GitHub', 'github'], ['LinkedIn', 'linkedin'], ['TryHackMe', 'tryhackme'], ['Instagram', 'instagram'], ['TikTok', 'tiktok'], ['X', 'x']].forEach(function (x) { out.push({ label: x[0], hint: t('pal_link'), run: function () { go(x[1]); } }); });
       out.push({ label: t('pal_lang'), hint: t('pal_act'), run: function () { setLang(lang() === 'pt' ? 'en' : 'pt'); } });
       out.push({ label: t('pal_term'), hint: t('pal_act'), run: function () { var i = $('.term-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); setTimeout(function () { i.focus({ preventScroll: true }); }, RM ? 0 : 450); } } });
       return out;
