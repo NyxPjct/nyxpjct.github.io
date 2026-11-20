@@ -3,7 +3,7 @@
   var RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   var HOVER = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
   var GH = 'https://github.com/NyxPjct';
-  var LINK = {li:'https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/', gh:GH, tt:'https://www.tiktok.com/@manufsnl', x:'https://x.com/athosmanuf', thm:'https://tryhackme.com/p/ATHOS'};
+  var LINK = {li:'https://www.linkedin.com/in/manoela-fasanello-b0a9b6273/', gh:GH, ig:'https://www.instagram.com/nyxprojectr', tt:'https://www.tiktok.com/@manufsnl', x:'https://x.com/athosmanuf', thm:'https://tryhackme.com/p/ATHOS'};
   var PROJ = [['DailyAPP','Android · iOS'],['DrawSketch','Web · Desktop · Android · iOS'],['MarketAI','Web · Windows'],['HoneyMoney','Web · open source']];
   var T = {
     pt: {
@@ -21,7 +21,7 @@
       exit:'não dá pra sair tão fácil assim. que tal: contato ;)',
       ls:'dailyapp/  drawsketch/  marketai/  honeymoney/  sobre.txt  foco.txt',
       about:'Curso Defesa Cibernética na Estácio, desenvolvo apps e estudo segurança ofensiva. No NYX Project R publico conteúdo de segurança e divulgo meus apps.',
-      openUse:'uso: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | tiktok | x', opening:'abrindo ',
+      openUse:'uso: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram | tiktok | x', opening:'abrindo ',
       nofile:': arquivo não encontrado', files:{'foco.txt':'focus','focus.txt':'focus','sobre.txt':'about','about.txt':'about'}
     },
     en: {
@@ -39,7 +39,7 @@
       exit:'it is not that easy to leave. how about: contact ;)',
       ls:'dailyapp/  drawsketch/  marketai/  honeymoney/  about.txt  focus.txt',
       about:'I study Cyber Defense at Estácio, build apps and study offensive security. On NYX Project R I share security content and showcase my apps.',
-      openUse:'usage: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | tiktok | x', opening:'opening ',
+      openUse:'usage: open dailyapp | drawsketch | marketai | honeymoney | github | linkedin | tryhackme | instagram | tiktok | x', opening:'opening ',
       nofile:': no such file', files:{'foco.txt':'focus','focus.txt':'focus','sobre.txt':'about','about.txt':'about'}
     }
   };
@@ -70,7 +70,7 @@
 
   /* ---------- destinos (terminal e busca rápida) ---------- */
   var APPS = {dailyapp:'DailyAPP', drawsketch:'DrawSketch', marketai:'MarketAI', honeymoney:'HoneyMoney'};
-  var EXT = {github:LINK.gh, linkedin:LINK.li, tiktok:LINK.tt, x:LINK.x, tryhackme:LINK.thm};
+  var EXT = {github:LINK.gh, linkedin:LINK.li, instagram:LINK.ig, tiktok:LINK.tt, x:LINK.x, tryhackme:LINK.thm};
   function go(target){
     if (APPS[target]) { location.href = BASE + 'cases/' + target + '.html'; return true; }
     if (EXT[target]) { window.open(EXT[target], '_blank', 'noopener'); return true; }
@@ -141,7 +141,7 @@
       if (META.home) t.items.forEach(function(it){ out.push({label:it[0], hint:t.sec, run:function(){ var el = document.querySelector('[data-lang="' + l + '"] ' + it[1]) || document.querySelector(it[1]); if (el) el.scrollIntoView({behavior:RM ? 'auto' : 'smooth'}); }}); });
       else out.push({label:l === 'pt' ? 'Voltar ao portfólio' : 'Back to portfolio', hint:t.sec, run:function(){ location.href = BASE || '/'; }});
       Object.keys(APPS).forEach(function(k){ out.push({label:APPS[k], hint:t.cs, run:function(){ go(k); }}); });
-      [['GitHub','github'],['LinkedIn','linkedin'],['TryHackMe','tryhackme'],['TikTok','tiktok'],['X','x']].forEach(function(x){ out.push({label:x[0], hint:t.ext, run:function(){ go(x[1]); }}); });
+      [['GitHub','github'],['LinkedIn','linkedin'],['TryHackMe','tryhackme'],['Instagram','instagram'],['TikTok','tiktok'],['X','x']].forEach(function(x){ out.push({label:x[0], hint:t.ext, run:function(){ go(x[1]); }}); });
       out.push({label:t.lang, hint:t.act, run:function(){ window.nyxSetLang(l === 'pt' ? 'en' : 'pt'); }});
       if (META.home) out.push({label:t.term, hint:t.act, run:function(){ var i = document.querySelector('[data-lang="' + l + '"] .term-in'); if (i){ i.scrollIntoView({block:'center', behavior:RM ? 'auto' : 'smooth'}); setTimeout(function(){ i.focus({preventScroll:true}); }, RM ? 0 : 450); } }});
       return out;
@@ -249,7 +249,7 @@
       else if (c === 'projects'){ line(t.proj, 't-dim'); PROJ.forEach(function(p){ link('', GH + '/' + p[0], p[0]); out.lastChild.appendChild(document.createTextNode(pad('', 13 - p[0].length) + p[1])); }); line(t.more, 't-dim'); }
       else if (c === 'ls'){ line(t.ls, 't-mut'); }
       else if (c === 'stack'){ t.stack.forEach(function(s){ line(pad(s[0], 12) + s[1], 't-mut'); }); }
-      else if (c === 'contact'){ link(pad('linkedin', 11), LINK.li, 'manoela-fasanello'); link(pad('github', 11), LINK.gh, 'NyxPjct'); link(pad('tiktok', 11), LINK.tt, '@manufsnl'); link(pad('x', 11), LINK.x, '@athosmanuf'); link(pad('tryhackme', 11), LINK.thm, 'ATHOS'); }
+      else if (c === 'contact'){ link(pad('linkedin', 11), LINK.li, 'manoela-fasanello'); link(pad('github', 11), LINK.gh, 'NyxPjct'); link(pad('instagram', 11), LINK.ig, '@nyxprojectr'); link(pad('tiktok', 11), LINK.tt, '@manufsnl'); link(pad('x', 11), LINK.x, '@athosmanuf'); link(pad('tryhackme', 11), LINK.thm, 'ATHOS'); }
       else if (c === 'tryhackme'){ line(t.thm, 't-mut'); link('', LINK.thm, 'tryhackme.com/p/ATHOS'); }
       else if (c === 'cat'){ var f = t.files[arg]; if (f === 'focus') line(t.focus, 't-mut'); else if (f === 'about') line(t.about, 't-mut'); else line('cat: ' + (arg || '?') + t.nofile, 't-err'); }
       else if (c === 'about'){ line(t.about, 't-mut'); }
